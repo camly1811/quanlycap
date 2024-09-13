@@ -50,6 +50,6 @@ test:
 #
 production:
   <<: *default
-  database: quanlycap_production
-  username: quanlycap
-  password: <%= ENV["QUANLYCAP_DATABASE_PASSWORD"] %>
+  database: quanlycap
+  username: mandn
+  password: Mandn@123654
