@@ -1,0 +1,2 @@
+module DuongongsHelper
+end

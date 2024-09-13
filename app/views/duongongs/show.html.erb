@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @duongong %>
+
+<div>
+  <%= link_to "Edit this duongong", edit_duongong_path(@duongong) %> |
+  <%= link_to "Back to duongongs", duongongs_path %>
+
+  <%= button_to "Destroy this duongong", @duongong, method: :delete %>
+</div>

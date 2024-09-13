@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tuyến Cap</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <%= csrf_meta_tags %>
+  <style>
+    #map { height: 90vh; }
+    .controls { width: 10%; }
+    .form-group select {
+      border: 2px solid #ced4da;
+      border-radius: 2px;
+      height: 41px;
+      width: 100%;
+    }
+    h5 { text-align: center; }
+    #tuyen-cap-form-container {
+      display: none; /* Ẩn khung form khi trang tải */
+    }
+    .map-marker {
+      background: white;
+      border-radius: 50%;
+      width: 25px;
+      height: 23px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #000;
+      border: 2px solid #000;
+    }
+    .map-marker .fa-wifi {
+      color: #000; /* Adjust color as needed */
+    }
+  </style>
+</head>
+<body>
+
+<div class="contai">
+  <div class="map-container">
+    <div id="map"></div>
+  </div>
+  <div class="controls-container">
+  </div>
+</div>
+<%= render "control" %>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const createNewBtn = document.getElementById('create-new-btn');
+      const formContainer = document.getElementById('tuyen-cap-form-container');
+      const cancelBtn = document.getElementById('hide-route');
+
+      createNewBtn.addEventListener('click', function() {
+        formContainer.style.display = formContainer.style.display === 'block' ? 'none' : 'block';
+      });
+
+      cancelBtn.addEventListener('click', function() {
+        formContainer.style.display = 'none'; // Ẩn khung form
+      });
+    });
+
+    mapboxgl.accessToken = 'pk.eyJ1IjoibHludGMiLCJhIjoiY2x4M2R6ajdsMHQ0ejJub21xcnMzdWJqNSJ9.nFYWpY_vjwZcPAvMeZAoKw';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [108.218763, 16.0750095407], // Default center
+      zoom: 16
+    });
+
+    var coordinates = [];
+    var selectedBEs = [];
+    var tuyencapsData = [];
+    var currentTuyencapId = null;
+    
+    function updateRouteCount() {
+      const routeCount = tuyencapsData.length;
+      document.getElementById('route-count').textContent = routeCount;
+    }
+
+    function fetchTuyencaps() {
+      fetch('<%= tuyencaps_path(format: :json) %>')
+        .then(response => response.json())
+        .then(data => {
+          tuyencapsData = data; // Store data for later use
+          data.forEach(tuyencap => {
+            var tuyencapCoordinates = tuyencap.bes.map(be => [be.longitude, be.latitude]);
+
+            if (tuyencapCoordinates.length > 1) {
+              map.addLayer({
+                'id': 'route-' + tuyencap.id,
+                'type': 'line',
+                'source': {
+                  'type': 'geojson',
+                  'data': {
+                    'type': 'Feature',
+                    'geometry': {
+                      'type': 'LineString',
+                      'coordinates': tuyencapCoordinates
+                    }
+                  }
+                },
+                'layout': {
+                  'line-join': 'round',
+                  'line-cap': 'round'
+                },
+                'paint': {
+                  'line-color': '#888',
+                  'line-width': 8
+                }
+              });
+
+              // Add click event listener for the route
+              map.on('click', 'route-' + tuyencap.id, function (e) {
+                showPopup(e, tuyencap);
+              });
+
+              // Change cursor to pointer on hover
+              map.on('mouseenter', 'route-' + tuyencap.id, function () {
+                map.getCanvas().style.cursor = 'pointer';
+              });
+
+              // Change cursor back on mouseleave
+              map.on('mouseleave', 'route-' + tuyencap.id, function () {
+                map.getCanvas().style.cursor = '';
+              });
+            }
+          });
+          updateRouteCount();
+        })
+        .catch(error => console.error('Error fetching Tuyencaps:', error));
+    }
+
+    function showPopup(e, tuyencap) {
+      // Create popup content
+      var content = `<h5>${tuyencap.ten_tuyen}</h5>
+                    <p>Bắt đầu: ${tuyencap.diembatdau || 'N/A'}</p>
+                    <p>Kết thúc: ${tuyencap.diemketthuc || 'N/A'}</p>
+                    <p>Phân loại: ${tuyencap.phanloai || 'N/A'}</p>
+                    <p>Đơn vị quản lý: ${tuyencap.dvquanly || 'N/A'}</p>
+                    <p>Các bể cap:</p> <ul>`;
+
+      tuyencap.bes.forEach(be => {
+        content += `<li>Bể Cap: ${be.id}<br>Tọa độ: [${be.longitude}, ${be.latitude}]</li>`;
+      });      
+      content += '</ul>';
+      content += `<button onclick="deleteTuyencap(${tuyencap.id})">Delete</button>`;          
+      // Create and show the popup
+      new mapboxgl.Popup()
+        .setLngLat(e.lngLat)
+        .setHTML(content)
+        .addTo(map);
+    }
+
+    function showAllRoutes() {
+      // Remove existing routes if any
+      map.getStyle().layers.forEach(layer => {
+        if (layer.id.startsWith('route-')) {
+          map.removeLayer(layer.id);
+          map.removeSource(layer.id);
+        }
+      });
+      tuyencapsData.forEach(tuyencap => {
+        var tuyencapCoordinates = tuyencap.bes.map(be => [be.longitude, be.latitude]);
+
+        if (tuyencapCoordinates.length > 1) {
+          map.addLayer({
+            'id': 'route-' + tuyencap.id,
+            'type': 'line',
+            'source': {
+              'type': 'geojson',
+              'data': {
+                'type': 'Feature',
+                'geometry': {
+                  'type': 'LineString',
+                  'coordinates': tuyencapCoordinates
+                }
+              }
+            },
+            'layout': {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            'paint': {
+              'line-color': '#888',
+              'line-width': 8
+            }
+          });
+
+          // Add click event listener for the route
+          map.on('click', 'route-' + tuyencap.id, function (e) {
+            showPopup(e, tuyencap);
+          });
+
+          // Change cursor to pointer on hover
+          map.on('mouseenter', 'route-' + tuyencap.id, function () {
+            map.getCanvas().style.cursor = 'pointer';
+          });
+
+          // Change cursor back on mouseleave
+          map.on('mouseleave', 'route-' + tuyencap.id, function () {
+            map.getCanvas().style.cursor = '';
+          });
+        }
+      });
+    }
+
+    function showRoute(tuyencapId) {
+      currentTuyencapId = tuyencapId;
+      // Remove existing routes if any
+      map.getStyle().layers.forEach(layer => {
+        if (layer.id.startsWith('route-')) {
+          map.removeLayer(layer.id);
+          map.removeSource(layer.id);
+        }
+      });
+
+      const tuyencap = tuyencapsData.find(tc => tc.id === tuyencapId);
+      if (tuyencap) {
+        var tuyencapCoordinates = tuyencap.bes.map(be => [be.longitude, be.latitude]);
+        if (tuyencapCoordinates.length > 1) {
+          map.addLayer({
+            'id': 'route-' + tuyencapId,
+            'type': 'line',
+            'source': {
+              'type': 'geojson',
+              'data': {
+                'type': 'Feature',
+                'geometry': {
+                  'type': 'LineString',
+                  'coordinates': tuyencapCoordinates
+                }
+              }
+            },
+            'layout': {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            'paint': {
+              'line-color': '#888',
+              'line-width': 8
+            }
+          });
+
+          // Add click event listener for the route
+          map.on('click', 'route-' + tuyencapId, function (e) {
+            showPopup(e, tuyencap);
+          });
+
+          // Change cursor to pointer on hover
+          map.on('mouseenter', 'route-' + tuyencapId, function () {
+            map.getCanvas().style.cursor = 'pointer';
+          });
+
+          // Change cursor back on mouseleave
+          map.on('mouseleave', 'route-' + tuyencapId, function () {
+            map.getCanvas().style.cursor = '';
+          });
+        }
+      }
+    }
+
+    fetchTuyencaps();
+
+    document.getElementById('save-changes-btn').addEventListener('click', function() {
+      if (currentTuyencapId && selectedBEs.length > 0) {
+        fetch(`/tuyencaps/add_bes`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({ be_ids: selectedBEs.join(','), id: currentTuyencapId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert(data.message);
+            showRoute(currentTuyencapId); // Refresh the route to include new points
+            // Reload the page after a successful creation
+            window.location.reload();
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch(error => console.error('Error:', error));
+      } else {
+        alert('Chọn một Tuyencap có thể thay đổi.');
+      }
+    });
+
+    // Add event listener for the "Hide Routes" button
+    document.getElementById('hide-routes').addEventListener('click', function() {
+      // Iterate over all layers and hide those with IDs starting with 'route-'
+      map.getStyle().layers.forEach(layer => {
+        if (layer.id.startsWith('route-')) {
+          map.setLayoutProperty(layer.id, 'visibility', 'none');
+        }
+      });
+    });
+
+    <% @bes.each do |be| %>
+      var el = document.createElement('div');
+      el.className = 'map-marker';
+      el.innerHTML = '<i class="fa-solid fa-ring"></i>'; // FontAwesome icon
+
+      var marker = new mapboxgl.Marker({ element: el })
+        .setLngLat([<%= be.longitude %>, <%= be.latitude %>])
+        .addTo(map)
+        .setPopup(new mapboxgl.Popup({ offset: 25 }).setText('<%= be.id %>'))
+        .getElement().addEventListener('click', function() {
+          var beId = '<%= be.id %>';
+          var coord = [<%= be.longitude %>, <%= be.latitude %>];
+
+          if (!selectedBEs.includes(beId)) {
+            selectedBEs.push(beId);
+            coordinates.push(coord);
+
+            if (coordinates.length > 1) {
+              if (map.getLayer('route')) {
+                map.getSource('route').setData({
+                  'type': 'Feature',
+                  'geometry': {
+                    'type': 'LineString',
+                    'coordinates': coordinates
+                  }
+                });
+              } else {
+                map.addLayer({
+                  'id': 'route',
+                  'type': 'line',
+                  'source': {
+                    'type': 'geojson',
+                    'data': {
+                      'type': 'Feature',
+                      'geometry': {
+                        'type': 'LineString',
+                        'coordinates': coordinates
+                      }
+                    }
+                  },
+                  'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                  },
+                  'paint': {
+                    'line-color': '#888',
+                    'line-width': 8
+                  }
+                });
+              }
+            }
+            document.getElementById('be-ids-field').value = selectedBEs.join(',');
+          } else {
+            selectedBEs.splice(selectedBEs.indexOf(beId), 1);
+            coordinates = coordinates.filter(coord => coord.toString() !== coord.toString());
+
+            if (coordinates.length > 0) {
+              map.getSource('route').setData({
+                'type': 'Feature',
+                'geometry': {
+                  'type': 'LineString',
+                  'coordinates': coordinates
+                }
+              });
+            } else {
+              map.removeLayer('route');
+              map.removeSource('route');
+            }
+            document.getElementById('be-ids-field').value = selectedBEs.join(',');
+          }
+        });
+    <% end %>
+
+    document.getElementById('create-tuyencap').addEventListener('click', function(event) {
+      var tenTuyen = document.getElementById('tuyen-cap-ten').value.trim();
+      var diembatdau_cap = document.getElementById('diembatdau_cap').value.trim();
+      var diemketthuc_cap = document.getElementById('diemketthuc_cap').value.trim();
+      var phanloai = document.getElementById('phanloai').value.trim();
+      var dvquanly = document.getElementById('dvquanly').value.trim();
+
+      if (coordinates.length <= 1) {
+        alert('Vui lòng nhấn vào các bes trên bản đồ để có thể tạo ra tuyến cap!');
+        event.preventDefault(); 
+      } else if (!tenTuyen) {
+        alert('Vui lòng nhập tên tuyến!');
+        event.preventDefault();
+      } else if (!diembatdau_cap) {
+        alert('Vui lòng nhập tên điểm bắt đầu!');
+        event.preventDefault();
+      } else if (!diemketthuc_cap) {
+        alert('Vui lòng nhập tên điểm kết thúc!');
+        event.preventDefault();
+      } else if (!phanloai) {
+        alert('Vui lòng chọn phân loại!');
+        event.preventDefault();
+      } else if (!dvquanly) {
+        alert('Vui lòng chọn đơn vị quản lý!');
+        event.preventDefault();
+      }
+    });
+
+    document.getElementById('tuyencap-form').addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      var formData = new FormData(this);
+
+      fetch(this.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          // Clear the previous route
+          if (map.getLayer('route')) {
+            map.removeLayer('route');
+            map.removeSource('route');
+          }
+
+          // Re-add the route based on the new data
+          var newCoordinates = [];
+          data.bes.forEach(be => {
+            newCoordinates.push([be.longitude, be.latitude]);
+          });
+
+          if (newCoordinates.length > 1) {
+            map.addLayer({
+              'id': 'route',
+              'type': 'line',
+              'source': {
+                'type': 'geojson',
+                'data': {
+                  'type': 'Feature',
+                  'geometry': {
+                    'type': 'LineString',
+                    'coordinates': newCoordinates
+                  }
+                }
+              },
+              'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+              },
+              'paint': {
+                'line-color': '#888',
+                'line-width': 8
+              }
+            });
+          }
+          alert(data.message);
+          // Reload the page after a successful creation
+          window.location.reload();
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('cancel-route').addEventListener('click', function() {
+      selectedBEs = [];
+      coordinates = [];
+      if (map.getLayer('route')) {
+        map.removeLayer('route');
+        map.removeSource('route');
+      }
+
+      // Xóa dữ liệu trong các trường nhập liệu
+      document.getElementById('tuyen-cap-ten').value = '';
+      document.getElementById('diembatdau_cap').value = '';
+      document.getElementById('diemketthuc_cap').value = '';
+      document.getElementById('be-ids-field').value = '';
+
+      // Đặt lại các trường select
+      document.querySelector('#tuyen-cap-form-container select[name="tuyen_cap[phanloai]"]').value = '';
+      document.querySelector('#tuyen-cap-form-container select[name="tuyen_cap[dvquanly]"]').value = '';
+    });
+
+    function deleteTuyencap(id) {
+      if (confirm('Bạn có chắc chắn muốn xóa Tuyến cap này không?')) {
+        fetch(`/tuyencaps/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          }
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Tuyencap was successfully deleted.');
+            // Remove the layer associated with the deleted Tuyencap
+            map.getLayer(`route-${id}`) && map.removeLayer(`route-${id}`);
+            map.getSource(`route-${id}`) && map.removeSource(`route-${id}`);
+          } else {
+            alert('Error deleting Tuyencap: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          window.location.href = '/tuyencaps';
+          alert('Xóa Tuyencap thành công!');
+        });
+      }
+    }
+
+    function zoomIn() {
+      map.zoomIn();
+    }
+    function zoomOut() {
+      map.zoomOut();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  ten_ong: MyString
+  loai_ong: MyString
+  mau_sac: MyString
+  don_vi_ql: MyString
+  be_dau: one
+  be_cuoi: one
+
+two:
+  ten_ong: MyString
+  loai_ong: MyString
+  mau_sac: MyString
+  don_vi_ql: MyString
+  be_dau: two
+  be_cuoi: two

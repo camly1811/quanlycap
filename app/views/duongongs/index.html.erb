@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Đường ống Cap</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css" rel="stylesheet" />
+  <%= csrf_meta_tags %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    .map-marker {
+      background: white;
+      border-radius: 49%;
+      width: 23px;
+      height: 21px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      color: #000;
+      border: 0px solid #000;
+    }
+    .map-marker .fa-sewer {
+      color: #000; /* Adjust color as needed */
+    }
+  </style>
+</head>
+<body>
+  <div id="map" style="height: 95vh;"></div>
+  <div class="controls">
+    <button onclick="zoomIn()">+</button>
+    <button onclick="zoomOut()">-</button>
+  </div>
+  <script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibHludGMiLCJhIjoiY2x4M2R6ajdsMHQ0ejJub21xcnMzdWJqNSJ9.nFYWpY_vjwZcPAvMeZAoKw';
+    var map = new mapboxgl.Map({
+      container: 'map',
+      style: 'mapbox://styles/mapbox/streets-v11',
+      center: [108.218763, 16.0750095407],
+      zoom: 16
+    });
+
+    var clickedBes = [];
+    var bes = {};
+    var routes = {};
+
+    <% @bes.each do |be| %>
+      bes[<%= be.id %>] = {
+        id: <%= be.id %>,
+        longitude: <%= be.longitude %>,
+        latitude: <%= be.latitude %>
+      };
+
+      // Create a custom marker with FontAwesome icon
+      var markerElement = document.createElement('div');
+      markerElement.className = 'map-marker';
+      markerElement.innerHTML = '<i class="fa-solid fa-ring"></i>'; // Use the appropriate FontAwesome class
+
+      var marker = new mapboxgl.Marker(markerElement)
+        .setLngLat([<%= be.longitude %>, <%= be.latitude %>])
+        .addTo(map);
+        // .setPopup(new mapboxgl.Popup({ offset: 25 }).setText('<%= be.id %>'));
+      marker.getElement().addEventListener('click', function() {
+        clickedBes.push(bes[<%= be.id %>]);
+        if (clickedBes.length === 2) {
+          addRouteBetweenBes(clickedBes[0], clickedBes[1]);
+          clickedBes = [];
+        }
+      });
+    <% end %>
+
+    fetch('/duongongs/routes')
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(route => {
+          var coordinates = [
+            [route.be_dau.longitude, route.be_dau.latitude],
+            [route.be_cuoi.longitude, route.be_cuoi.latitude]
+          ];
+          var routeId = 'route-' + route.id;
+          addRouteLayer(routeId, coordinates);
+          routes[routeId] = route; // Store route data
+
+          // Add click event to show popup with route information and delete button
+          map.on('click', routeId, function (e) {
+            var popup = new mapboxgl.Popup()
+              .setLngLat(e.lngLat)
+              .setHTML(`
+                <h3>${route.ten_ong}</h3>
+                <p><strong>Loại ống:</strong> ${route.loai_ong}</p>
+                <p><strong>Màu sắc:</strong> ${route.mau_sac}</p>
+                <p><strong>Đơn vị quản lý:</strong> ${route.don_vi_ql}</p>
+                <h2>Bể đầu:</h2>
+                  <p>Kinh độ: </strong> ${route.be_dau.longitude} </p>
+                  <p>Vĩ độ: </strong> ${route.be_dau.latitude} </p>
+                  <p>Loại bể: </strong> ${route.be_dau.loaibe} </p>
+                  <p>Đơn vị quản lý: </strong> ${route.be_dau.coquan} </p>
+                <h2>Bể cuối:</h2>
+                  <p>Kinh độ: </strong> ${route.be_cuoi.longitude} </p>
+                  <p>Vĩ độ: </strong> ${route.be_cuoi.latitude} </p>
+                  <p>Loại bể: </strong> ${route.be_cuoi.loaibe} </p>
+                  <p>Đơn vị quản lý: </strong> ${route.be_cuoi.coquan} </p>
+                <div class="d-flex justify-content-center">  
+                  <button id="delete-route-${route.id}" class="delete-route-button">Xóa</button>
+                </div>
+              `) 
+              .addTo(map);
+
+            // Handle delete button click
+            document.getElementById(`delete-route-${route.id}`).addEventListener('click', function() {
+              if (confirm('Bạn có chắc chắn muốn xóa Đường ống này không?')) {
+                fetch(`/duongongs/${route.id}/destroy_route`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                  }
+                })
+                .then(response => {
+                  if (response.ok) {
+                    // Remove the route layer and source from the map
+                    map.removeLayer(routeId);
+                    map.removeSource(routeId);
+                    popup.remove();
+                    alert('Đường ống đã được xóa thành công');
+                  } else {
+                    alert('Không thể xóa đường ống');
+                  }
+                })
+                .catch(error => console.error('Error deleting route:', error));
+              }
+            });
+          });
+        });
+      })
+      .catch(error => console.error('Error fetching routes:', error));
+
+    function addRouteBetweenBes(be1, be2) {
+      var coordinates = [
+        [be1.longitude, be1.latitude],
+        [be2.longitude, be2.latitude]
+      ];
+      var routeId = 'route-' + new Date().getTime();
+      addRouteLayer(routeId, coordinates);
+      // New code for popup form
+      var popup = new mapboxgl.Popup({ closeOnClick: false });
+      var formContent = `
+        <form id="route-form" class="container">
+          <div class="form-group">
+            <label for="ten_ong">Tên ống:</label>
+            <input class="form-control" type="text" id="ten_ong" name="duongong[ten_ong]" >
+          </div>
+          <div class="form-group">
+            <label for="loai_ong">Loại ống:</label>
+            <select class="form-control" id="loai_ong" name="duongong[loai_ong]" required>
+              <option value="" disabled selected>Chọn loại ống</option>
+              <option value="Ống xoắn HDPE">Ống xoắn HDPE</option>  <option value="Ống UPVC">Ống UPVC</option> <option value="Dùng chung qua đường">Dùng chung qua đường</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="mau_sac">Màu sắc:</label>
+            <select class="form-control" id="mau_sac" name="duongong[mau_sac]" required>
+              <option value="" disabled selected>Chọn đơn vị quản lý</option>
+              <option value="Trắng">Trắng</option> <option value="Đen">Đen</option> <option value="Đỏ">Đỏ</option> <option value="Cam">Cam</option> <option value="Vàng">Vàng</option> <option value="Lục">Lục</option> <option value="Lam">Lam</option> <option value="Chàm">Chàm</option> <option value="Tím">Tím</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="don_vi_ql">Đơn vị quản lý:</label>
+            <select class="form-control" id="don_vi_ql" name="duongong[don_vi_ql]" required>
+              <option value="" disabled selected>Chọn màu ống</option>
+              <option value="Trung tâm IID">Trung tâm IID</option> <option value="Trung tâm đèn THGT">Trung tâm đèn THGT</option> <option value="VNPT">VNPT</option> <option value="Viettel">Viettel</option> <option value="FPT">FPT</option> 
+            </select>
+          </div>
+          <input type="hidden" id="be_dau_id" name="duongong[be_dau_id]" value="${be1.id}">
+          <input type="hidden" id="be_cuoi_id" name="duongong[be_cuoi_id]" value="${be2.id}">
+          <div class="d-flex justify-content-center">
+            <button type="submit">Lưu trữ</button>
+            <button type="reset" id="reset-button">Hủy Lưu trữ</button>
+          </div>
+        </form>`;
+      popup.setHTML(formContent);
+      popup.setLngLat([(coordinates[0][0] + coordinates[1][0]) / 2, (coordinates[0][1] + coordinates[1][1]) / 2]); // Set popup to starting point of route
+      popup.addTo(map);
+
+      // Handle form submission
+      var form = document.getElementById('route-form');
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        fetch('/duongongs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+          },
+          body: JSON.stringify({
+            duongong: {
+              ten_ong: document.getElementById('ten_ong').value,
+              loai_ong: document.getElementById('loai_ong').value,
+              mau_sac: document.getElementById('mau_sac').value,
+              don_vi_ql: document.getElementById('don_vi_ql').value,
+              be_dau_id: be1.id,
+              be_cuoi_id: be2.id
+            }
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Route saved:', data);
+          routes[routeId] = data; // Store saved route data
+          window.location.reload(); // Reload the page after saving
+        })
+        .catch(error => console.error('Error saving route:', error));
+        window.location.reload(); 
+      });
+      // Handle form reset
+      var resetButton = document.getElementById('reset-button');
+      resetButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        map.removeLayer(routeId); // Remove the route layer from the map
+        map.removeSource(routeId); // Remove the source for the route layer
+        popup.remove(); // Close the popup
+        clickedBes = []; // Reset the clickedBes array
+      });
+    }
+
+    function addRouteLayer(routeId, coordinates) {
+      map.addLayer({
+        id: routeId,
+        type: 'line',
+        source: {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            geometry: {
+              type: 'LineString',
+              coordinates: coordinates
+            }
+          }
+        },
+        layout: {
+          'line-join': 'round',
+          'line-cap': 'round'
+        },
+        paint: {
+          'line-color': '#121416',
+          'line-width': 6
+        }
+      });
+    }
+    function zoomIn() {
+      map.zoomIn();
+    }
+    function zoomOut() {
+      map.zoomOut();
+    }
+  </script>
+</body>
+</html>

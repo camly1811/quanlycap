@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @tuyencap %>
+
+<div>
+  <%= link_to "Edit this tuyencap", edit_tuyencap_path(@tuyencap) %> |
+  <%= link_to "Back to tuyencaps", tuyencaps_path %>
+
+  <%= button_to "Destroy this tuyencap", @tuyencap, method: :delete %>
+</div>

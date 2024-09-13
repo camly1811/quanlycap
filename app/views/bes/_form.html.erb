@@ -1,0 +1,49 @@
+<div class = "container">
+<%= form_with(model: be, local: true) do |form| %>
+  <% if be.errors.any? %>
+    <div id="error_explanation" class="alert alert-danger">
+      <h2><%= pluralize(be.errors.count, "error") %> prohibited this be from being saved:</h2>
+
+      <ul>
+      <% be.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= form.label :address, class: 'font-weight-bold' %>
+    <%= form.text_field :address, class: 'form-control', placeholder: 'Nhập địa chỉ' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :tenbe, class: 'font-weight-bold' %>
+    <%= form.text_field :tenbe, class: 'form-control', placeholder: 'Nhập tên bể' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :loaibe, class: 'font-weight-bold' %>
+    <%= form.select :loaibe, options_for_select(['Hố ga', 'Bể cáp 1 đan', 'Bể cáp 2 đan']), { include_blank: 'Chọn loại bể' }, { class: 'form-control' } %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :coquan, class: 'font-weight-bold' %>
+    <%= form.text_field :coquan, class: 'form-control', placeholder: 'Nhập cơ quan' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :latitude, class: 'font-weight-bold' %>
+    <%= form.text_field :latitude, class: 'form-control', placeholder: 'Nhập vĩ độ' %>
+  </div>
+
+  <div class="form-group">
+    <%= form.label :longitude, class: 'font-weight-bold' %>
+    <%= form.text_field :longitude, class: 'form-control', placeholder: 'Nhập kinh độ' %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit class: ' btn btn-primary ' %>
+  </div>
+<% end %>
+</div>

@@ -1,0 +1,93 @@
+@import "bootstrap";
+
+/* header */
+#logo {
+  float: left;
+  margin-right: 10px;
+  font-size: 1.7em;
+  color: #df1111;
+  text-transform: uppercase;
+  letter-spacing: -1px;
+  padding-top: 9px;
+  font-weight: bold;
+}
+#logo:hover {
+  color: #dd0d0d;
+  text-decoration: none;
+}
+
+#map {
+  width: 100%;
+  height: 700px;
+  position: relative;
+}
+.controls {
+  position: absolute;
+  bottom: 50px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.controls button {
+  display: block;
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+h3{
+  text-align: center;
+}
+.comineterb {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 11%;
+  height: 42%;
+  /* Adjust width as needed */
+  overflow-y: auto; /* Thêm thanh cuộn dọc */
+    /* overflow-x: auto; nếu cần thanh cuộn ngang */
+}
+
+.comineterb button {
+  display: block;
+  width: 100%;
+  margin-bottom: 5px;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  text-align: left;
+  /* Align text to the left */
+  box-sizing: border-box;
+  /* Include padding in width calculation */
+}
+
+.comineterb button:hover {
+  opacity: 0.8;
+  /* Change background color on hover */
+}
+.contai {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  /* Adjust as needed */
+  width: 100%;
+}
+
+.map-container {
+  flex: 87%;
+  /* Adjust the flex value to control the width */
+}
+
+.controls-container {
+  flex: 10%;
+  /* Adjust the flex value to control the width */
+  display: flex;
+  flex-direction: column;
+}

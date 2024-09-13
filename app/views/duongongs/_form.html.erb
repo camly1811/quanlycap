@@ -1,0 +1,47 @@
+<%= form_with(model: duongong) do |form| %>
+  <% if duongong.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(duongong.errors.count, "error") %> prohibited this duongong from being saved:</h2>
+
+      <ul>
+        <% duongong.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :ten_ong, style: "display: block" %>
+    <%= form.text_field :ten_ong %>
+  </div>
+
+  <div>
+    <%= form.label :loai_ong, style: "display: block" %>
+    <%= form.text_field :loai_ong %>
+  </div>
+
+  <div>
+    <%= form.label :mau_sac, style: "display: block" %>
+    <%= form.text_field :mau_sac %>
+  </div>
+
+  <div>
+    <%= form.label :don_vi_ql, style: "display: block" %>
+    <%= form.text_field :don_vi_ql %>
+  </div>
+
+  <div>
+    <%= form.label :be_dau_id, style: "display: block" %>
+    <%= form.text_field :be_dau_id %>
+  </div>
+
+  <div>
+    <%= form.label :be_cuoi_id, style: "display: block" %>
+    <%= form.text_field :be_cuoi_id %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>

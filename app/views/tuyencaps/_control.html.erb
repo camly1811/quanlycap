@@ -1,0 +1,75 @@
+<button id="create-new-btn" class="btn btn-success">Tạo mới</button>
+<button id="save-changes-btn" class="btn btn-primary">Chỉnh sửa</button>
+<button onclick="zoomIn()">+</button>
+<button onclick="zoomOut()">-</button>
+<div id="tuyen-cap-form-container">
+  <div class="controls">
+    <%= form_with url: create_from_map_tuyencaps_path, method: :post, local: true, id: 'tuyencap-form' do |form| %>
+      <div class="form-group">
+        <%= form.label :ten_tuyen, "Tên Tuyến", class: 'sr-only' %>
+        <%= form.text_field :ten_tuyen, id: 'tuyen-cap-ten', class: 'form-control mr-2', placeholder: 'Nhập Tên Tuyến' %>
+      </div>
+      <div class="form-group">
+        <%= form.label :diembatdau, "Tên điểm bắt đầu", class: 'sr-only' %>
+        <%= form.text_field :diembatdau, id: 'diembatdau_cap', class: 'form-control mr-2', placeholder: 'Nhập điểm bắt đầu' %>
+      </div>
+      <div class="form-group">
+        <%= form.label :diemketthuc, "Tên điểm kết thúc", class: 'sr-only' %>
+        <%= form.text_field :diemketthuc, id: 'diemketthuc_cap', class: 'form-control mr-2', placeholder: 'Nhập điểm kết thúc' %>
+      </div>
+      <div>
+        <div class="form-group">
+          <%= form.label :phanloai, "Phân Loại", class: 'sr-only' %>
+          <%= form.select :phanloai, 
+                          options_for_select([
+                            ["Chọn phân loại", ""], 
+                            ["Cáp 4 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)", "Cáp 4 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)"],
+                            ["Cáp 8 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)", "Cáp 8 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)"],
+                            ["Cáp 12 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)", "Cáp 12 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)"],
+                            ["Cáp 24 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)", "Cáp 24 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)"],
+                            ["Cáp 48 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)", "Cáp 48 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)"],
+                            ["Cáp 96 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)", "Cáp 96 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)"]
+                          ]), 
+                          { class: 'form-control mr-2' }%>
+        </div>
+      </div>
+      <div>
+        <div class="form-group">
+          <%= form.label :dvquanly, "Đơn Vị Quản Lý", class: 'sr-only' %>
+          <%= form.select :dvquanly, 
+                          options_for_select([
+                            ["Chọn Đơn Vị Quản Lý", ""], 
+                            ["Trung tâm IID", "Trung tâm IID"],
+                            ["Trung tâm đèn THGT", "Trung tâm đèn THGT"],
+                            ["VNPT", "VNPT"],
+                            ["Viettel", "Viettel"],
+                            ["FPT", "FPT"]
+                          ]), 
+                          { class: 'form-control mr-2' }
+          %>
+        </div>
+      </div>
+      <div>
+        <%= form.hidden_field :be_ids, id: 'be-ids-field' %>
+      </div>
+      <div>
+        <button type="submit" id="create-tuyencap" class="btn btn-primary">Tạo Tuyến Cap mới</button>
+        <button type="button" id="cancel-route" class="btn btn-dark">Hủy Tuyến Cáp </button>
+        <button type="button" id="hide-route" class="btn btn-dark">Ẩn Khung Form </button>
+      </div>
+    <% end %>
+  </div>
+</div>
+<div class="comineterb">
+  <div class="row mb-2">
+    <div class="col">
+      <button onclick="showAllRoutes()" class="btn btn-primary w-100">Display (<span id="route-count">0</span>)</button>
+    </div>
+    <div class="col">
+      <button id="hide-routes" class="btn btn-secondary w-100">Hide</button>
+    </div>
+  </div>
+  <% @tuyencaps.each do |tuyencap| %>
+    <button onclick="showRoute(<%= tuyencap.id %>)"><%= tuyencap.ten_tuyen %></button>
+  <% end %>
+</div>

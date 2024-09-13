@@ -1,0 +1,42 @@
+<%= form_with(model: tuyencap) do |form| %>
+  <% if tuyencap.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(tuyencap.errors.count, "error") %> prohibited this tuyencap from being saved:</h2>
+
+      <ul>
+        <% tuyencap.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :ten_tuyen, style: "display: block" %>
+    <%= form.text_field :ten_tuyen %>
+  </div>
+
+  <div>
+    <%= form.label :phanloai, style: "display: block" %>
+    <%= form.text_field :phanloai %>
+  </div>
+
+  <div>
+    <%= form.label :dvquanly, style: "display: block" %>
+    <%= form.text_field :dvquanly %>
+  </div>
+
+  <div>
+    <%= form.label :diembatdau, style: "display: block" %>
+    <%= form.text_field :diembatdau %>
+  </div>
+
+  <div>
+    <%= form.label :diemketthuc, style: "display: block" %>
+    <%= form.text_field :diemketthuc %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
