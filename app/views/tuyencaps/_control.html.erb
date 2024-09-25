@@ -53,9 +53,15 @@
         <%= form.hidden_field :be_ids, id: 'be-ids-field' %>
       </div>
       <div>
-        <button type="submit" id="create-tuyencap" class="btn btn-primary">Tạo Tuyến Cap</button>
-        <button type="button" id="cancel-route" class="btn btn-dark">Hủy Tuyến Cáp </button>
-        <button type="button" id="hide-route" class="btn btn-dark">Ẩn Khung Form </button>
+        <div class="row mb-2">
+          <div class="col">
+            <button type="submit" id="create-tuyencap" class="btn btn-primary">Lưu</button>
+          </div>
+          <div class="col">
+            <button type="button" id="cancel-route" class="btn btn-danger">Hủy</button>
+          </div>
+        </div>
+        <button type="button" id="hide-route" class="btn btn-dark">Ẩn Khung</button>
       </div>
     <% end %>
   </div>
