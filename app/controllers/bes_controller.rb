@@ -18,18 +18,18 @@ class BesController < ApplicationController
   def edit; end
 
   # POST /bes or /bes.json
-def create
-  @be = Be.new(be_params)
+  def create
+    @be = Be.new(be_params)
 
-  respond_to do |format|
-    if @be.save
-      format.json { render json: @be, status: :created } # Return the created be object
-      format.html { redirect_to bes_path, notice: 'Be was successfully created.' }
-    else
-      format.html { render :new, status: :unprocessable_entity }
+    respond_to do |format|
+      if @be.save
+        format.json { render json: @be, status: :created } # Return the created be object
+        format.html { redirect_to bes_path, notice: 'Be was successfully created.' }
+      else
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
-end
 
   # PATCH/PUT /bes/1 or /bes/1.json
   def update

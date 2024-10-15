@@ -4,21 +4,18 @@
   <title>Hố ga/bể cáp</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script src="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.js"></script>
-  <link href="https://api.mapbox.com/mapbox-gl-js/v2.4.1/mapbox-gl.css" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-  <div id="map" style="height: 90vh;"></div>
-  <div class="controls">
+  <div id="map" style="height: 93vh;"></div>
+  <div class="controls" style="border: 3px solid #15b126; bottom: 50%; right: 0px">
     <button id="addLocationButton" onclick="addLocation()">Thêm</button>
     <button id="completeButton" onclick="completeLocation()" style="display: none;">Xong</button>
     <button onclick="zoomIn()">+</button>
     <button onclick="zoomOut()">-</button>
+    <div>
+      <%= button_to 'Nhập dữ liệu', new_be_path, method: :get, class: 'btn btn-primary' %>
+    <div>
   </div>
-  <div>
-    <%= button_to 'Nhập dữ liệu', new_be_path, method: :get, class: 'btn btn-primary' %>
-  <div>
   <script>
     mapboxgl.accessToken = 'pk.eyJ1IjoibHludGMiLCJhIjoiY2x4M2R6ajdsMHQ0ejJub21xcnMzdWJqNSJ9.nFYWpY_vjwZcPAvMeZAoKw';
     var map = new mapboxgl.Map({
@@ -86,114 +83,120 @@
       location.reload();
     }
 
-    function addLocation() {
-      // Allow for continuous clicking
-      map.on('click', function(e) {
-        var lng = e.lngLat.lng.toFixed(6);
-        var lat = e.lngLat.lat.toFixed(6);
-        document.getElementById('addLocationButton').style.backgroundColor = 'blue';
-        // Show the "Xong" button
-        document.getElementById('completeButton').style.display = 'inline-block';
+  function addLocation() {
+    // Change button color to red immediately
+    document.getElementById('addLocationButton').style.backgroundColor = 'red';
 
-        var popup = new mapboxgl.Popup({ closeOnClick: false })
-          .setLngLat(e.lngLat)
-          .setHTML('<form id="locationForm" class="container">' +
-            '<input class="form-control" type="text" id="address" name="address" placeholder="Địa chỉ"><br>' +
-            '<select class="form-control" id="loaibe" name="loaibe" required>' +
-              '<option value="" disabled selected>Chọn loại bể</option>' +
-              '<option value="Hố ga">Hố ga</option>' +
-              '<option value="Bể cáp 1 đan">Bể cáp 1 đan</option>' +
-              '<option value="Bể cáp 2 đan">Bể cáp 2 đan</option>' +
-            '</select><br>' +
-            '<select class="form-control" id="coquan" name="coquan" required>' +
-              '<option value="" disabled selected>Đơn vị quản lý</option>' +
-              '<option value="Trung tâm IID">Trung tâm IID</option>' +
-              '<option value="Trung tâm đèn THGT">Trung tâm đèn THGT</option>' +
-              '<option value="VNPT">VNPT</option>' +
-              '<option value="Viettel">Viettel</option>' +
-              '<option value="FPT">FPT</option>' +
-            '</select><br>' +
-            'Kinh độ: ' + lng + '<br>' +
-            'Vĩ độ: ' + lat + '<br><br>' +
-            '<div class="d-flex justify-content-center">'+
-            '<input class="btn btn-primary" type="submit" value="Gửi">' + 
-            '</div>' +
-            '</form>').addTo(map);
+    // Allow for continuous clicking
+    map.on('click', function(e) {
+      var lng = e.lngLat.lng.toFixed(6);
+      var lat = e.lngLat.lat.toFixed(6);
+      
+      // Change button color to blue after clicking on the map
+      document.getElementById('addLocationButton').style.backgroundColor = 'blue';
 
-        function onSubmitLocation(event) {
-          event.preventDefault();
-          var address = document.getElementById('address').value;
-          var loaibe = document.getElementById('loaibe').value;
-          var coquan = document.getElementById('coquan').value;
+      // Show the "Xong" button
+      document.getElementById('completeButton').style.display = 'inline-block';
 
-          var data = {
-            address: address,
-            loaibe: loaibe,
-            coquan: coquan,
-            latitude: lat,
-            longitude: lng
-          };
+      var popup = new mapboxgl.Popup({ closeOnClick: false })
+        .setLngLat(e.lngLat)
+        .setHTML('<form id="locationForm" class="container">' +
+          '<input class="form-control" type="text" id="address" name="address" placeholder="Địa chỉ"><br>' +
+          '<select class="form-control" id="loaibe" name="loaibe" required>' +
+            '<option value="" disabled selected>Chọn loại bể</option>' +
+            '<option value="Hố ga">Hố ga</option>' +
+            '<option value="Bể cáp 1 đan">Bể cáp 1 đan</option>' +
+            '<option value="Bể cáp 2 đan">Bể cáp 2 đan</option>' +
+          '</select><br>' +
+          '<select class="form-control" id="coquan" name="coquan" required>' +
+            '<option value="" disabled selected>Đơn vị quản lý</option>' +
+            '<option value="Trung tâm IID">Trung tâm IID</option>' +
+            '<option value="Trung tâm đèn THGT">Trung tâm đèn THGT</option>' +
+            '<option value="VNPT">VNPT</option>' +
+            '<option value="Viettel">Viettel</option>' +
+            '<option value="FPT">FPT</option>' +
+          '</select><br>' +
+          'Kinh độ: ' + lng + '<br>' +
+          'Vĩ độ: ' + lat + '<br><br>' +
+          '<div class="d-flex justify-content-center">'+
+          '<input class="btn btn-primary" type="submit" value="Gửi">' + 
+          '</div>' +
+          '</form>').addTo(map);
 
-          fetch('/bes', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'X-CSRF-Token': getCSRFToken()
-            },
-            body: JSON.stringify({ be: data })
-          })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error('Network response was not ok');
-            }
-            return response.json();
-          })
-          .then(newBe => {
-            popup.remove(); // Close the popup after successful submission
+      function onSubmitLocation(event) {
+        event.preventDefault();
+        var address = document.getElementById('address').value;
+        var loaibe = document.getElementById('loaibe').value;
+        var coquan = document.getElementById('coquan').value;
 
-            var iconClass;
-            switch (newBe.loaibe) {
-              case 'Bể cáp 1 đan':
-                iconClass = 'fa-regular fa-square';
-                break;
-              case 'Bể cáp 2 đan':
-                iconClass = 'fa-regular fa-square-minus';
-                break;
-              case 'Hố ga':
-                iconClass = 'fa-solid fa-ring';
-                break;
-              default:
-                iconClass = 'fa-solid fa-circle';
-            }
+        var data = {
+          address: address,
+          loaibe: loaibe,
+          coquan: coquan,
+          latitude: lat,
+          longitude: lng
+        };
 
-            var newPopupContent = '<p>ID: ' + newBe.id + '</p>' +
-              '<p>' + newBe.loaibe + '</p>' +
-              '<p>' + newBe.address + '</p>' +
-              '<p>' + newBe.coquan + '</p>' +
-              '<p>Kinh độ: ' + newBe.longitude + '</p>' +
-              '<p>Vĩ độ: ' + newBe.latitude + '</p>';
+        fetch('/bes', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-Token': getCSRFToken()
+          },
+          body: JSON.stringify({ be: data })
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(newBe => {
+          popup.remove(); // Close the popup after successful submission
 
-            var newMarkerElement = document.createElement('div');
-            newMarkerElement.className = 'map-marker';
-            newMarkerElement.innerHTML = '<i class="' + iconClass + '"></i>';
+          var iconClass;
+          switch (newBe.loaibe) {
+            case 'Bể cáp 1 đan':
+              iconClass = 'fa-regular fa-square';
+              break;
+            case 'Bể cáp 2 đan':
+              iconClass = 'fa-regular fa-square-minus';
+              break;
+            case 'Hố ga':
+              iconClass = 'fa-solid fa-ring';
+              break;
+            default:
+              iconClass = 'fa-solid fa-circle';
+          }
 
-            var newMarker = new mapboxgl.Marker(newMarkerElement)
-              .setLngLat([newBe.longitude, newBe.latitude])
-              .setPopup(new mapboxgl.Popup().setHTML(newPopupContent))
-              .addTo(map);
+          var newPopupContent = '<p>ID: ' + newBe.id + '</p>' +
+            '<p>' + newBe.loaibe + '</p>' +
+            '<p>' + newBe.address + '</p>' +
+            '<p>' + newBe.coquan + '</p>' +
+            '<p>Kinh độ: ' + newBe.longitude + '</p>' +
+            '<p>Vĩ độ: ' + newBe.latitude + '</p>';
 
-            markers.push({
-              id: newBe.id,
-              marker: newMarker
-            });
-          })
-          .catch(error => {
-            console.error('Error:', error);
+          var newMarkerElement = document.createElement('div');
+          newMarkerElement.className = 'map-marker';
+          newMarkerElement.innerHTML = '<i class="' + iconClass + '"></i>';
+
+          var newMarker = new mapboxgl.Marker(newMarkerElement)
+            .setLngLat([newBe.longitude, newBe.latitude])
+            .setPopup(new mapboxgl.Popup().setHTML(newPopupContent))
+            .addTo(map);
+
+          markers.push({
+            id: newBe.id,
+            marker: newMarker
           });
-        }
-        document.getElementById('locationForm').addEventListener('submit', onSubmitLocation);
-      });
-    }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+      }
+      document.getElementById('locationForm').addEventListener('submit', onSubmitLocation);
+    });
+  }
 
     function editBe(beId) {
       var be = bes.find(function(b) {

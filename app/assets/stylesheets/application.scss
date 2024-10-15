@@ -36,21 +36,76 @@
   width: 100%;
 }
 
+.show-list-tuyencap{
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  width: 13%;
+  height: 45%;
+  bottom: 50px;
+  right: 4px;
+  overflow-y: auto;
+}
+
+#tuyen-cap-list {
+  display: none;
+  /* Ẩn danh sách theo mặc định */
+  margin-top: 10px;
+  /* Khoảng cách phía trên */
+}
+
+.show-list-tuyencap button {
+  display: block;
+  /* Đảm bảo mỗi button chiếm một dòng */
+  width: 100%;
+  /* Chiếm toàn bộ chiều rộng */
+  padding: 10px;
+  /* Khoảng cách bên trong button */
+  margin: 5px 0;
+  /* Khoảng cách giữa các button */
+  background-color: #007bff;
+  /* Màu nền của button */
+  color: white;
+  /* Màu chữ */
+  border: none;
+  /* Không có viền */
+  border-radius: 5px;
+  /* Bo tròn góc */
+  text-align: left;
+  /* Căn trái văn bản */
+  min-height: 50px;
+  /* Chiều cao tối thiểu */
+  font-size: 16px;
+  /* Kích thước chữ */
+  cursor: pointer;
+  /* Con trỏ khi di chuột */
+  transition: background-color 0.3s;
+  /* Hiệu ứng chuyển màu */
+}
+
+.show-list-tuyencap button:hover {
+  background-color: #0056b3;
+  /* Màu nền khi di chuột */
+}
+
 h3{
   text-align: center;
 }
 .comineterb {
   position: absolute;
-  top: 59px;
+  top: 62px;
   right: 4px;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 10px;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   width: 13%;
-  height: 30%;
+  height: 32%;
   /* Adjust width as needed */
   overflow-y: auto; /* Thêm thanh cuộn dọc */
+  // overflow: hidden; /* Ẩn thanh cuộn */
     /* overflow-x: auto; nếu cần thanh cuộn ngang */
 }
 
@@ -103,6 +158,7 @@ h3{
   font-size: 18px;
   color: #000;
   border: 0px solid #000;
+  cursor: pointer; /* Đổi con trỏ thành mũi tên */
 }
 
 .map-marker .fa-sewer {
