@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_09_13_014455) do
+ActiveRecord::Schema[7.0].define(version: 2024_10_21_013436) do
   create_table "bes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "address"
     t.string "tenbe"
@@ -47,10 +47,12 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_13_014455) do
 
   create_table "tuyencap_bes", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "tuyencap_id", null: false
-    t.bigint "be_id", null: false
+    t.bigint "be_id_dau_id", null: false
+    t.bigint "be_id_cuoi_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["be_id"], name: "index_tuyencap_bes_on_be_id"
+    t.index ["be_id_cuoi_id"], name: "index_tuyencap_bes_on_be_id_cuoi_id"
+    t.index ["be_id_dau_id"], name: "index_tuyencap_bes_on_be_id_dau_id"
     t.index ["tuyencap_id"], name: "index_tuyencap_bes_on_tuyencap_id"
   end
 
@@ -68,6 +70,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_09_13_014455) do
   add_foreign_key "duongongs", "bes", column: "be_dau_id"
   add_foreign_key "tuyen_cap_duong_ongs", "duongongs"
   add_foreign_key "tuyen_cap_duong_ongs", "tuyencaps"
-  add_foreign_key "tuyencap_bes", "bes"
+  add_foreign_key "tuyencap_bes", "bes", column: "be_id_cuoi_id"
+  add_foreign_key "tuyencap_bes", "bes", column: "be_id_dau_id"
   add_foreign_key "tuyencap_bes", "tuyencaps"
 end

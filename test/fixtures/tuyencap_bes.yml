@@ -2,8 +2,10 @@
 
 one:
   tuyencap: one
-  be: one
+  be_id_dau: one
+  be_id_cuoi: one
 
 two:
   tuyencap: two
-  be: two
+  be_id_dau: two
+  be_id_cuoi: two

@@ -1,28 +1,14 @@
 class TuyencapsController < ApplicationController
-  before_action :set_tuyencap, only: %i[show edit update destroy add_bes]
+  before_action :set_tuyencap, only: %i[show edit update destroy remove_connections]
 
   # GET /tuyencaps or /tuyencaps.json
   def index
-    # @tuyencaps = Tuyencap.all
-    # @tuyencaps = Tuyencap.includes(duongongs: %i[be_dau be_cuoi]).all
-    # @tuyencaps = Tuyencap.includes(:bes, :duongongs).all
     @tuyencaps = Tuyencap.all
-    @bes = Be.all # Load all bes for potential display on the map
-    # @duongongs = DuongOng.all # Load all duongongs for potential display on the map
-    # @tuyen_cap_be_data = TuyencapBe.joins(:tuyencap).select('tuyencaps.ten_tuyen, tuyencap_bes.be_id, bes.longitude, bes.latitude').joins('INNER JOIN bes ON tuyencap_bes.be_id = bes.id').group_by(&:ten_tuyen)
-    # render json: {
-    #   tuyencaps: @tuyencaps.map do |tuyencap|
-    #     {
-    #       id: tuyencap.id,
-    #       bes: tuyencap.bes.map do |be|
-    #         { id: be.id, longitude: be.longitude, latitude: be.latitude }
-    #       end
-    #     }
-    #   end
-    # }
+    @bes = Be.all
+    # @tuyencaps = Tuyencap.all.includes(:tuyencap_bes)
     respond_to do |format|
       format.html
-      format.json { render json: @tuyencaps.as_json(include: :bes) }
+      format.json { render json: @tuyencaps.as_json(include: { tuyencap_bes: { include: %i[be_id_dau be_id_cuoi] } }) }
     end
   end
 
@@ -38,21 +24,37 @@ class TuyencapsController < ApplicationController
   def edit; end
 
   # POST /tuyencaps or /tuyencaps.json
+  # def create
+  #   @tuyencap = Tuyencap.new(tuyencap_params)
+
+  #   respond_to do |format|
+  #     if @tuyencap.save
+  #       format.html { redirect_to @tuyencap, notice: 'Tuyencap was successfully created.' }
+  #       format.json { render :show, status: :created, location: @tuyencap }
+  #     else
+  #       format.html { render :new, status: :unprocessable_entity }
+  #       format.json { render json: @tuyencap.errors, status: :unprocessable_entity }
+  #     end
+  #   end
+  # end
+
   def create
     @tuyencap = Tuyencap.new(tuyencap_params)
 
-    return unless @tuyencap.save
-
-    redirect_to tuyencaps_path, notice: 'Tuyencap was successfully created.'
-    # else
-    #   render :new
+    if @tuyencap.save
+      create_tuyencap_bes(params[:be_ids])
+      redirect_to @tuyencap, notice: 'Tuyến cáp đã được tạo thành công.'
+    else
+      @bes = Be.all
+      render :new
+    end
   end
 
   # PATCH/PUT /tuyencaps/1 or /tuyencaps/1.json
   def update
     respond_to do |format|
       if @tuyencap.update(tuyencap_params)
-        format.html { redirect_to tuyencap_url(@tuyencap), notice: 'Tuyencap was successfully updated.' }
+        format.html { redirect_to @tuyencap, notice: 'Tuyencap was successfully updated.' }
         format.json { render :show, status: :ok, location: @tuyencap }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -64,57 +66,85 @@ class TuyencapsController < ApplicationController
   # DELETE /tuyencaps/1 or /tuyencaps/1.json
   def destroy
     @tuyencap.destroy
-    TuyencapBe.where(tuyencap_id: @tuyencap.id).destroy_all
 
     respond_to do |format|
-      format.html { redirect_to tuyencaps_url, notice: 'Tuyencap was successfully destroyed.' }
-      format.json { render json: { success: true, message: 'Tuyencap was successfully deleted.' } }
+      format.html { redirect_to tuyencaps_path, status: :see_other, notice: 'Tuyencap was successfully destroyed.' }
+      format.json { head :no_content }
     end
   end
+
+  # def create_from_map
+  #   @tuyencap = Tuyencap.new(tuyencap_params)
+
+  #   if @tuyencap.save
+  #     be_ids = params[:be_ids].split(',')
+  #     if be_ids.size >= 2
+  #       be_ids.each_cons(2) do |be_id_dau, be_id_cuoi|
+  #         TuyencapBe.create(tuyencap: @tuyencap, be_id_dau_id: be_id_dau, be_id_cuoi_id: be_id_cuoi)
+  #       end
+  #     end
+
+  #     @tuyencap = Tuyencap.includes(tuyencap_bes: %i[be_id_dau be_id_cuoi]).find(@tuyencap.id)
+
+  #     render json: {
+  #       success: true,
+  #       message: 'Tuyến cap đã được tạo thành công.',
+  #       tuyencap: @tuyencap,
+  #       tuyencap_id: @tuyencap.id
+  #     }
+  #   else
+  #     render json: { success: false, message: @tuyencap.errors.full_messages }
+  #   end
+  # end
 
   def create_from_map
     @tuyencap = Tuyencap.new(tuyencap_params)
 
     if @tuyencap.save
-      be_ids = params[:be_ids].split(',').map(&:to_i)
-      be_ids.each do |be_id|
-        TuyencapBe.create(tuyencap: @tuyencap, be_id:)
+      be_ids = params[:be_ids].split(',')
+      if be_ids.size >= 2
+        be_ids.each_cons(2) do |be_id_dau, be_id_cuoi|
+          TuyencapBe.create(tuyencap: @tuyencap, be_id_dau_id: be_id_dau, be_id_cuoi_id: be_id_cuoi)
+        end
       end
 
-      @tuyencap = Tuyencap.includes(:bes).find(@tuyencap.id)
-
-      bes_with_coords = @tuyencap.bes.map do |be|
-        { id: be.id, longitude: be.longitude, latitude: be.latitude }
-      end
+      @tuyencap = Tuyencap.includes(tuyencap_bes: %i[be_id_dau be_id_cuoi]).find(@tuyencap.id)
 
       render json: {
         success: true,
         message: 'Tuyến cap đã được tạo thành công.',
-        tuyencap: @tuyencap,
-        bes: bes_with_coords,
-        tuyencap_id: @tuyencap.id
+        tuyencap: @tuyencap.as_json(include: { tuyencap_bes: { include: %i[be_id_dau be_id_cuoi] } })
       }
     else
       render json: { success: false, message: @tuyencap.errors.full_messages }
     end
   end
 
-  def add_bes
-    be_ids = params[:be_ids].split(',').map(&:to_i)
+  def add_connections
+    @tuyencap = Tuyencap.find(params[:id])
+    be_ids = params[:be_ids].split(',')
 
-    be_ids.each do |be_id|
-      # Check if the Be is already associated to avoid duplicates
-      @tuyencap.bes << Be.find(be_id) unless @tuyencap.bes.exists?(be_id)
-    end
-
-    if @tuyencap.save
-      render json: {
-        success: true,
-        message: 'Tuyến Cáp đã được cập nhật thành công với bes bổ sung.',
-        tuyencap: @tuyencap
-      }
+    if be_ids.size >= 2
+      be_ids.each_cons(2) do |be_id_dau, be_id_cuoi|
+        TuyencapBe.create(tuyencap: @tuyencap, be_id_dau_id: be_id_dau, be_id_cuoi_id: be_id_cuoi)
+      end
+      render json: { success: true, message: 'Đã thêm đường nối thành công.' }
     else
-      render json: { success: false, message: @tuyencap.errors.full_messages }
+      render json: { success: false, message: 'Vui lòng chọn ít nhất hai BEs để thêm đường nối!' }
+    end
+  end
+
+  def remove_connections
+    be_ids = params[:be_ids].split(',')
+
+    if be_ids.any?
+      TuyencapBe.where(tuyencap: @tuyencap,
+                       be_id_dau_id: be_ids).or(TuyencapBe.where(tuyencap: @tuyencap,
+                                                                 be_id_cuoi_id: be_ids)).destroy_all
+
+      render json: { success: true, message: 'Đã xóa các kết nối thành công.' }
+    else
+      render json: { success: false, message: 'Không có BE nào được chọn để xóa.' }
     end
   end
 
@@ -127,8 +157,6 @@ class TuyencapsController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def tuyencap_params
-    # params.require(:tuyencap).permit(:ten_tuyen, be_ids: [])
-    # params.permit!
     params.permit(:ten_tuyen, :phanloai, :dvquanly, :diembatdau, :diemketthuc, be_ids: [])
   end
 end
