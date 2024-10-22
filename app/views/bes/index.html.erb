@@ -45,14 +45,14 @@
 
       switch (be.loaibe) {
         case 'Bể cáp 1 đan':
-          iconClass = 'fa-regular'; 
+          iconClass = 'fa-solid';
+          markerClass += ' rectangular-marker'; // Add rectangular class
           break;
         case 'Bể cáp 2 đan':
           iconClass = 'fa-solid fa-minus';
           break;
         case 'Hố ga':
-          iconClass = 'fa-solid';
-          markerClass += ' rectangular-marker'; // Add rectangular class
+          iconClass = 'fa-regular'; 
           break;
       }
       
@@ -183,17 +183,15 @@ function handleMapClick(e) {
 
       switch (newBe.loaibe) {
         case 'Bể cáp 1 đan':
-          iconClass = 'fa-regular';
+          iconClass = 'fa-solid';
+          markerClass += ' rectangular-marker'; // Add rectangular class
           break;
         case 'Bể cáp 2 đan':
           iconClass = 'fa-solid fa-minus';
           break;
         case 'Hố ga':
-          iconClass = 'fa-solid';
-          markerClass += ' rectangular-marker'; // Add rectangular class
+          iconClass = 'fa-regular'; 
           break;
-        default:
-          iconClass = 'fa-solid fa-circle'; // Default icon for unknown types
       }
 
       var newPopupContent = '<p>ID: ' + newBe.id + '</p>' +

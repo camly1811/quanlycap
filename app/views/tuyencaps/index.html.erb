@@ -63,14 +63,14 @@
       var iconClass = '';
       switch ('<%= be.loaibe %>') {
         case 'Bể cáp 1 đan':
-          iconClass = 'fa-regular'; // Changed to 'fa-regular' as per your request
+          iconClass = 'fa-solid'; // Set appropriate icon class for 'Hố ga'
+          el.className += ' rectangular-marker'; // Add rectangular class
           break;
         case 'Bể cáp 2 đan':
           iconClass = 'fa-solid fa-minus'; // Updated icon class for 'Bể cáp 2 đan'
           break;
         case 'Hố ga':
-          iconClass = 'fa-solid'; // Set appropriate icon class for 'Hố ga'
-          el.className += ' rectangular-marker'; // Add rectangular class
+          iconClass = 'fa-regular'; // Changed to 'fa-regular' as per your request
           break;
         default:
           iconClass = 'fa-solid fa-circle'; // Default icon for unknown types
