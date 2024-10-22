@@ -13,7 +13,7 @@
     <button onclick="zoomIn()">+</button>
     <button onclick="zoomOut()">-</button>
     <div>
-      <%= button_to 'Nhập dữ liệu', new_be_path, method: :get, class: 'btn btn-primary' %>
+      <%= button_to 'Thêm mới thủ công', new_be_path, method: :get, class: 'btn btn-primary' %>
     <div>
   </div>
   <script>
@@ -41,17 +41,21 @@
     var markers = [];
     bes.forEach(function(be) {
       var iconClass;
+      var markerClass = 'map-marker'; // Default class
+
       switch (be.loaibe) {
         case 'Bể cáp 1 đan':
-          iconClass = 'fa-regular fa-square';
+          iconClass = 'fa-regular'; 
           break;
         case 'Bể cáp 2 đan':
-          iconClass = 'fa-regular fa-square-minus'; 
+          iconClass = 'fa-solid fa-minus';
           break;
         case 'Hố ga':
-          iconClass = 'fa-solid fa-ring';
+          iconClass = 'fa-solid';
+          markerClass += ' rectangular-marker'; // Add rectangular class
           break;
       }
+      
       var popupContent = '<p>Loại bể:&nbsp' + be.loaibe + '</p>' +
         '<p>Địa chỉ:&nbsp ' + be.address + '</p>' +
         '<p>Đơn vị quản lý:&nbsp ' + be.coquan + '</p>' +
@@ -64,7 +68,7 @@
 
       // Create a custom marker with FontAwesome icon
       var markerElement = document.createElement('div');
-      markerElement.className = 'map-marker';
+      markerElement.className = markerClass;
       markerElement.innerHTML = '<i class="' + iconClass + '"></i>';
 
       var marker = new mapboxgl.Marker(markerElement)
@@ -83,29 +87,29 @@
       location.reload();
     }
 
-let isAddingLocation = false;
+    let isAddingLocation = false;
 
-function addLocation() {
-  // Chuyển đổi trạng thái thêm vị trí
-  isAddingLocation = !isAddingLocation;
+    function addLocation() {
+      // Chuyển đổi trạng thái thêm vị trí
+      isAddingLocation = !isAddingLocation;
 
-  if (isAddingLocation) {
-    // Đổi màu nút thành đỏ
-    document.getElementById('addLocationButton').style.backgroundColor = 'red';
+      if (isAddingLocation) {
+        // Đổi màu nút thành đỏ
+        document.getElementById('addLocationButton').style.backgroundColor = 'red';
 
-    // Cho phép nhấn vào bản đồ
-    map.on('click', handleMapClick);
-  } else {
-    // Đổi màu nút về bình thường
-    document.getElementById('addLocationButton').style.backgroundColor = '';
+        // Cho phép nhấn vào bản đồ
+        map.on('click', handleMapClick);
+      } else {
+        // Đổi màu nút về bình thường
+        document.getElementById('addLocationButton').style.backgroundColor = '';
 
-    // Gỡ bỏ sự kiện nhấn vào bản đồ nếu không muốn thêm nữa
-    map.off('click', handleMapClick);
-    
-    // Ẩn nút "Xong"
-    document.getElementById('completeButton').style.display = 'none';
-  }
-}
+        // Gỡ bỏ sự kiện nhấn vào bản đồ nếu không muốn thêm nữa
+        map.off('click', handleMapClick);
+        
+        // Ẩn nút "Xong"
+        document.getElementById('completeButton').style.display = 'none';
+      }
+    }
 
 function handleMapClick(e) {
   var lng = e.lngLat.lng.toFixed(6);
@@ -137,10 +141,10 @@ function handleMapClick(e) {
       '</select><br>' +
       'Kinh độ: ' + lng + '<br>' +
       'Vĩ độ: ' + lat + '<br><br>' +
-      '<div class="d-flex justify-content-center">'+
-      '<input class="btn btn-primary" type="submit" value="Gửi">' + 
+      '<div class="d-flex justify-content-center">' +
+        '<input class="btn btn-primary" type="submit" value="Gửi">' + 
       '</div>' +
-      '</form>').addTo(map);
+    '</form>').addTo(map);
 
   function onSubmitLocation(event) {
     event.preventDefault();
@@ -175,18 +179,21 @@ function handleMapClick(e) {
       popup.remove();
 
       var iconClass;
+      var markerClass = 'map-marker'; // Default class
+
       switch (newBe.loaibe) {
         case 'Bể cáp 1 đan':
-          iconClass = 'fa-regular fa-square';
+          iconClass = 'fa-regular';
           break;
         case 'Bể cáp 2 đan':
-          iconClass = 'fa-regular fa-square-minus';
+          iconClass = 'fa-solid fa-minus';
           break;
         case 'Hố ga':
-          iconClass = 'fa-solid fa-ring';
+          iconClass = 'fa-solid';
+          markerClass += ' rectangular-marker'; // Add rectangular class
           break;
         default:
-          iconClass = 'fa-solid fa-circle';
+          iconClass = 'fa-solid fa-circle'; // Default icon for unknown types
       }
 
       var newPopupContent = '<p>ID: ' + newBe.id + '</p>' +
@@ -197,7 +204,7 @@ function handleMapClick(e) {
         '<p>Vĩ độ: ' + newBe.latitude + '</p>';
 
       var newMarkerElement = document.createElement('div');
-      newMarkerElement.className = 'map-marker';
+      newMarkerElement.className = markerClass;
       newMarkerElement.innerHTML = '<i class="' + iconClass + '"></i>';
 
       var newMarker = new mapboxgl.Marker(newMarkerElement)
@@ -218,9 +225,9 @@ function handleMapClick(e) {
       console.error('Lỗi:', error);
     });
   }
+
   document.getElementById('locationForm').addEventListener('submit', onSubmitLocation);
 }
-
 
     function editBe(beId) {
       var be = bes.find(function(b) {

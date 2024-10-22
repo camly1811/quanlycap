@@ -149,7 +149,7 @@ h3{
 
 .map-marker {
   background: white;
-  border-radius: 30%;
+  border-radius: 0%; /* Default circular style */
   width: 18px;
   height: 15px;
   display: flex;
@@ -157,8 +157,14 @@ h3{
   justify-content: center;
   font-size: 18px;
   color: #000;
-  border: 0px solid #000;
-  cursor: pointer; /* Đổi con trỏ thành mũi tên */
+  border: 2px solid #000;
+  cursor: pointer;
+}
+
+.rectangular-marker {
+  border-radius: 0%; /* Change to rectangle */
+  width: 24px; /* Adjust width as needed */
+  height: 12px; /* Adjust height as needed */
 }
 
 .map-marker .fa-sewer {
