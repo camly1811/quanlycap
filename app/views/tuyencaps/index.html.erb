@@ -79,7 +79,7 @@
       var marker = new mapboxgl.Marker({ element: el })
         .setLngLat([<%= be.longitude %>, <%= be.latitude %>])
         .addTo(map)
-        .setPopup(new mapboxgl.Popup({ offset: 25 }).setText('<%= be.id %>'))
+        // .setPopup(new mapboxgl.Popup({ offset: 25 }).setText('<%= be.id %>'))
         .getElement().addEventListener('click', function() {
           var beId = '<%= be.id %>';
           var coord = [<%= be.longitude %>, <%= be.latitude %>];
@@ -219,7 +219,6 @@
                     <p>Phân loại: ${tuyencap.phanloai || 'N/A'}</p>
                     <p>Đơn vị quản lý: ${tuyencap.dvquanly || 'N/A'}</p> <ul>`;    
       content += '</ul>';
-      // content += `<div style="text-align: center;"> <button class="btn btn-danger" onclick="deleteTuyencap(${tuyencap.id})">Delete</button></div>`;
 
       // Create and show the popup
       new mapboxgl.Popup()
@@ -236,7 +235,8 @@
 
     function showRoute(tuyencapId) {
       currentTuyencapId = tuyencapId;
-      // Remove existing routes if any
+
+      // Xóa các đường đi hiện tại nếu có
       map.getStyle().layers.forEach(layer => {
         if (layer.id.startsWith('route-')) {
           map.removeLayer(layer.id);
@@ -246,13 +246,23 @@
 
       const tuyencap = tuyencapsData.find(tc => tc.id === tuyencapId);
       if (tuyencap) {
-        var tuyencapCoordinates = tuyencap.tuyencap_bes.flatMap(tuyencap_be => [
-          [tuyencap_be.be_id_dau.longitude, tuyencap_be.be_id_dau.latitude],
-          [tuyencap_be.be_id_cuoi.longitude, tuyencap_be.be_id_cuoi.latitude]
-        ]);
-        if (tuyencapCoordinates.length > 1) {
+        var tuyencapCoordinates = [];
+        
+        // Chỉ vẽ những đoạn nối đã tồn tại, không tự động kết nối các điểm BE
+        tuyencap.tuyencap_bes.forEach(tuyencap_be => {
+          // Đảm bảo rằng đoạn nối này có đủ tọa độ để hiển thị
+          var coordDau = [tuyencap_be.be_id_dau.longitude, tuyencap_be.be_id_dau.latitude];
+          var coordCuoi = [tuyencap_be.be_id_cuoi.longitude, tuyencap_be.be_id_cuoi.latitude];
+
+          tuyencapCoordinates.push([coordDau, coordCuoi]); // Chỉ nối BE đầu và BE cuối cho mỗi đường nối
+        });
+
+        // Vẽ từng đoạn nối
+        tuyencapCoordinates.forEach((lineCoords, index) => {
+          var routeId = 'route-' + tuyencapId + '-' + index;
+
           map.addLayer({
-            'id': 'route-' + tuyencapId,
+            'id': routeId,
             'type': 'line',
             'source': {
               'type': 'geojson',
@@ -260,7 +270,7 @@
                 'type': 'Feature',
                 'geometry': {
                   'type': 'LineString',
-                  'coordinates': tuyencapCoordinates
+                  'coordinates': lineCoords // Chỉ vẽ đoạn kết nối hiện có
                 }
               }
             },
@@ -274,60 +284,25 @@
             }
           });
 
-          // Add click event listener for the route
-          map.on('click', 'route-' + tuyencapId, function (e) {
+          // Thêm sự kiện nhấp chuột cho từng đoạn nối
+          map.on('click', routeId, function (e) {
             showPopup(e, tuyencap);
           });
 
-          // Change cursor to pointer on hover
-          map.on('mouseenter', 'route-' + tuyencapId, function () {
+          // Thay đổi con trỏ thành pointer khi hover vào đoạn nối
+          map.on('mouseenter', routeId, function () {
             map.getCanvas().style.cursor = 'pointer';
           });
 
-          // Change cursor back on mouseleave
-          map.on('mouseleave', 'route-' + tuyencapId, function () {
+          // Đổi lại con trỏ khi không hover
+          map.on('mouseleave', routeId, function () {
             map.getCanvas().style.cursor = '';
           });
-        }
+        });
       }
     }
 
     fetchTuyencaps();
-
-    document.getElementById('save-changes-btn').addEventListener('click', function() {
-      if (!currentTuyencapId) {
-        alert('Vui lòng chọn một tuyến cap trước khi chỉnh sửa!');
-        return;
-      }
-
-      if (coordinates.length < 2) {
-        alert('Vui lòng chọn ít nhất hai BEs để thêm đường nối!');
-        return;
-      }
-
-      // Chuẩn bị dữ liệu gửi đi
-      var formData = new FormData();
-      formData.append('be_ids', selectedBEs.join(','));
-
-      // Gửi yêu cầu thêm kết nối
-      fetch(`/tuyencaps/${currentTuyencapId}/add_connections`, {
-        method: 'POST',
-        body: formData,
-        headers: {
-          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        }
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          alert(data.message);
-          // Có thể gọi lại hàm fetchTuyencaps để làm mới dữ liệu
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch(error => console.error('Error:', error));
-    });
 
     // Add event listener for the "Hide Routes" button
     document.getElementById('hide-routes').addEventListener('click', function() {
@@ -457,33 +432,82 @@
       document.querySelector('#tuyen-cap-form-container select[name="tuyen_cap[dvquanly]"]').value = '';
     });
 
-    function deleteTuyencap(id) {
-      if (confirm('Bạn có chắc chắn muốn xóa Tuyến cap này không?')) {
-        fetch(`/tuyencaps/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-          }
-        })
-        .then(response => response.json())
-        .then(data => {
-          if (data.success) {
-            alert('Tuyencap was successfully deleted.');
-            // Remove the layer associated with the deleted Tuyencap
-            map.getLayer(`route-${id}`) && map.removeLayer(`route-${id}`);
-            map.getSource(`route-${id}`) && map.removeSource(`route-${id}`);
-          } else {
-            alert('Error deleting Tuyencap: ' + data.message);
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          window.location.href = '/tuyencaps';
-          alert('Xóa Tuyencap thành công!');
-        });
+    document.getElementById('save-changes-btn').addEventListener('click', function() {
+      if (!currentTuyencapId) {
+        alert('Vui lòng chọn một tuyến cap trước khi chỉnh sửa!');
+        return;
       }
-    }
 
+      if (coordinates.length < 2) {
+        alert('Vui lòng chọn ít nhất hai BEs để thêm đường nối!');
+        return;
+      }
+
+      // Chuẩn bị dữ liệu gửi đi
+      var formData = new FormData();
+      formData.append('be_ids', selectedBEs.join(','));
+
+      // Gửi yêu cầu thêm kết nối
+      fetch(`/tuyencaps/${currentTuyencapId}/add_connections`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+          // Có thể gọi lại hàm fetchTuyencaps để làm mới dữ liệu
+           window.location.reload(); 
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+
+    document.getElementById('delete-changes-btn').addEventListener('click', function() {
+      if (!currentTuyencapId) {
+        alert('Vui lòng chọn một tuyến cap trước khi xóa đường nối!');
+        return;
+      }
+
+      if (selectedBEs.length < 2) {
+        alert('Vui lòng chọn ít nhất hai BEs để xóa đường nối!');
+        return;
+      }
+
+      // Hiển thị thông báo xác nhận
+      var confirmation = confirm('Bạn có chắc chắn muốn xóa đường nối giữa các BEs này không?');
+      if (!confirmation) {
+        return; // Nếu người dùng nhấn "Cancel", không thực hiện hành động xóa
+      }
+
+      // Chuẩn bị dữ liệu gửi đi
+      var formData = new FormData();
+      formData.append('be_ids', selectedBEs.join(','));
+
+      // Gửi yêu cầu xóa kết nối
+      fetch(`/tuyencaps/${currentTuyencapId}/remove_connections`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert(data.message);
+        } else {
+          alert(data.message);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    });
+    
     function zoomIn() {
       map.zoomIn();
     }

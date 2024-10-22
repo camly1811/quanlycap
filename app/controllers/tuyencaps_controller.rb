@@ -136,16 +136,14 @@ class TuyencapsController < ApplicationController
 
   def remove_connections
     be_ids = params[:be_ids].split(',')
+    
+    TuyencapBe.where(tuyencap: @tuyencap, be_id_dau_id: be_ids, be_id_cuoi_id: be_ids).destroy_all
 
-    if be_ids.any?
-      TuyencapBe.where(tuyencap: @tuyencap,
-                       be_id_dau_id: be_ids).or(TuyencapBe.where(tuyencap: @tuyencap,
-                                                                 be_id_cuoi_id: be_ids)).destroy_all
-
-      render json: { success: true, message: 'Đã xóa các kết nối thành công.' }
-    else
-      render json: { success: false, message: 'Không có BE nào được chọn để xóa.' }
-    end
+    render json: {
+      success: true,
+      message: 'Đường nối đã được xóa thành công.',
+      tuyencap: @tuyencap.as_json(include: { tuyencap_bes: { include: %i[be_id_dau be_id_cuoi] } })
+    }
   end
 
   private
