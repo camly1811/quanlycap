@@ -83,120 +83,144 @@
       location.reload();
     }
 
-  function addLocation() {
-    // Change button color to red immediately
+let isAddingLocation = false;
+
+function addLocation() {
+  // Chuyển đổi trạng thái thêm vị trí
+  isAddingLocation = !isAddingLocation;
+
+  if (isAddingLocation) {
+    // Đổi màu nút thành đỏ
     document.getElementById('addLocationButton').style.backgroundColor = 'red';
 
-    // Allow for continuous clicking
-    map.on('click', function(e) {
-      var lng = e.lngLat.lng.toFixed(6);
-      var lat = e.lngLat.lat.toFixed(6);
-      
-      // Change button color to blue after clicking on the map
-      document.getElementById('addLocationButton').style.backgroundColor = 'blue';
+    // Cho phép nhấn vào bản đồ
+    map.on('click', handleMapClick);
+  } else {
+    // Đổi màu nút về bình thường
+    document.getElementById('addLocationButton').style.backgroundColor = '';
 
-      // Show the "Xong" button
-      document.getElementById('completeButton').style.display = 'inline-block';
+    // Gỡ bỏ sự kiện nhấn vào bản đồ nếu không muốn thêm nữa
+    map.off('click', handleMapClick);
+    
+    // Ẩn nút "Xong"
+    document.getElementById('completeButton').style.display = 'none';
+  }
+}
 
-      var popup = new mapboxgl.Popup({ closeOnClick: false })
-        .setLngLat(e.lngLat)
-        .setHTML('<form id="locationForm" class="container">' +
-          '<input class="form-control" type="text" id="address" name="address" placeholder="Địa chỉ"><br>' +
-          '<select class="form-control" id="loaibe" name="loaibe" required>' +
-            '<option value="" disabled selected>Chọn loại bể</option>' +
-            '<option value="Hố ga">Hố ga</option>' +
-            '<option value="Bể cáp 1 đan">Bể cáp 1 đan</option>' +
-            '<option value="Bể cáp 2 đan">Bể cáp 2 đan</option>' +
-          '</select><br>' +
-          '<select class="form-control" id="coquan" name="coquan" required>' +
-            '<option value="" disabled selected>Đơn vị quản lý</option>' +
-            '<option value="Trung tâm IID">Trung tâm IID</option>' +
-            '<option value="Trung tâm đèn THGT">Trung tâm đèn THGT</option>' +
-            '<option value="VNPT">VNPT</option>' +
-            '<option value="Viettel">Viettel</option>' +
-            '<option value="FPT">FPT</option>' +
-          '</select><br>' +
-          'Kinh độ: ' + lng + '<br>' +
-          'Vĩ độ: ' + lat + '<br><br>' +
-          '<div class="d-flex justify-content-center">'+
-          '<input class="btn btn-primary" type="submit" value="Gửi">' + 
-          '</div>' +
-          '</form>').addTo(map);
+function handleMapClick(e) {
+  var lng = e.lngLat.lng.toFixed(6);
+  var lat = e.lngLat.lat.toFixed(6);
 
-      function onSubmitLocation(event) {
-        event.preventDefault();
-        var address = document.getElementById('address').value;
-        var loaibe = document.getElementById('loaibe').value;
-        var coquan = document.getElementById('coquan').value;
+  // Đổi màu nút thành xanh sau khi nhấn vào bản đồ
+  document.getElementById('addLocationButton').style.backgroundColor = 'blue';
 
-        var data = {
-          address: address,
-          loaibe: loaibe,
-          coquan: coquan,
-          latitude: lat,
-          longitude: lng
-        };
+  // Hiển thị nút "Xong"
+  document.getElementById('completeButton').style.display = 'inline-block';
 
-        fetch('/bes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-Token': getCSRFToken()
-          },
-          body: JSON.stringify({ be: data })
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(newBe => {
-          popup.remove(); // Close the popup after successful submission
+  var popup = new mapboxgl.Popup({ closeOnClick: false })
+    .setLngLat(e.lngLat)
+    .setHTML('<form id="locationForm" class="container">' +
+      '<input class="form-control" type="text" id="address" name="address" placeholder="Địa chỉ"><br>' +
+      '<select class="form-control" id="loaibe" name="loaibe" required>' +
+        '<option value="" disabled selected>Chọn loại bể</option>' +
+        '<option value="Hố ga">Hố ga</option>' +
+        '<option value="Bể cáp 1 đan">Bể cáp 1 đan</option>' +
+        '<option value="Bể cáp 2 đan">Bể cáp 2 đan</option>' +
+      '</select><br>' +
+      '<select class="form-control" id="coquan" name="coquan" required>' +
+        '<option value="" disabled selected>Đơn vị quản lý</option>' +
+        '<option value="Trung tâm IID">Trung tâm IID</option>' +
+        '<option value="Trung tâm đèn THGT">Trung tâm đèn THGT</option>' +
+        '<option value="VNPT">VNPT</option>' +
+        '<option value="Viettel">Viettel</option>' +
+        '<option value="FPT">FPT</option>' +
+      '</select><br>' +
+      'Kinh độ: ' + lng + '<br>' +
+      'Vĩ độ: ' + lat + '<br><br>' +
+      '<div class="d-flex justify-content-center">'+
+      '<input class="btn btn-primary" type="submit" value="Gửi">' + 
+      '</div>' +
+      '</form>').addTo(map);
 
-          var iconClass;
-          switch (newBe.loaibe) {
-            case 'Bể cáp 1 đan':
-              iconClass = 'fa-regular fa-square';
-              break;
-            case 'Bể cáp 2 đan':
-              iconClass = 'fa-regular fa-square-minus';
-              break;
-            case 'Hố ga':
-              iconClass = 'fa-solid fa-ring';
-              break;
-            default:
-              iconClass = 'fa-solid fa-circle';
-          }
+  function onSubmitLocation(event) {
+    event.preventDefault();
+    var address = document.getElementById('address').value;
+    var loaibe = document.getElementById('loaibe').value;
+    var coquan = document.getElementById('coquan').value;
 
-          var newPopupContent = '<p>ID: ' + newBe.id + '</p>' +
-            '<p>' + newBe.loaibe + '</p>' +
-            '<p>' + newBe.address + '</p>' +
-            '<p>' + newBe.coquan + '</p>' +
-            '<p>Kinh độ: ' + newBe.longitude + '</p>' +
-            '<p>Vĩ độ: ' + newBe.latitude + '</p>';
+    var data = {
+      address: address,
+      loaibe: loaibe,
+      coquan: coquan,
+      latitude: lat,
+      longitude: lng
+    };
 
-          var newMarkerElement = document.createElement('div');
-          newMarkerElement.className = 'map-marker';
-          newMarkerElement.innerHTML = '<i class="' + iconClass + '"></i>';
-
-          var newMarker = new mapboxgl.Marker(newMarkerElement)
-            .setLngLat([newBe.longitude, newBe.latitude])
-            .setPopup(new mapboxgl.Popup().setHTML(newPopupContent))
-            .addTo(map);
-
-          markers.push({
-            id: newBe.id,
-            marker: newMarker
-          });
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
+    fetch('/bes', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': getCSRFToken()
+      },
+      body: JSON.stringify({ be: data })
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
-      document.getElementById('locationForm').addEventListener('submit', onSubmitLocation);
+      return response.json();
+    })
+    .then(newBe => {
+      // Đóng popup sau khi gửi thành công
+      popup.remove();
+
+      var iconClass;
+      switch (newBe.loaibe) {
+        case 'Bể cáp 1 đan':
+          iconClass = 'fa-regular fa-square';
+          break;
+        case 'Bể cáp 2 đan':
+          iconClass = 'fa-regular fa-square-minus';
+          break;
+        case 'Hố ga':
+          iconClass = 'fa-solid fa-ring';
+          break;
+        default:
+          iconClass = 'fa-solid fa-circle';
+      }
+
+      var newPopupContent = '<p>ID: ' + newBe.id + '</p>' +
+        '<p>' + newBe.loaibe + '</p>' +
+        '<p>' + newBe.address + '</p>' +
+        '<p>' + newBe.coquan + '</p>' +
+        '<p>Kinh độ: ' + newBe.longitude + '</p>' +
+        '<p>Vĩ độ: ' + newBe.latitude + '</p>';
+
+      var newMarkerElement = document.createElement('div');
+      newMarkerElement.className = 'map-marker';
+      newMarkerElement.innerHTML = '<i class="' + iconClass + '"></i>';
+
+      var newMarker = new mapboxgl.Marker(newMarkerElement)
+        .setLngLat([newBe.longitude, newBe.latitude])
+        .setPopup(new mapboxgl.Popup().setHTML(newPopupContent))
+        .addTo(map);
+
+      markers.push({
+        id: newBe.id,
+        marker: newMarker
+      });
+
+      // Đặt lại popup cho phép thêm vị trí tiếp theo
+      document.getElementById('locationForm').reset();
+      document.getElementById('address').focus();
+    })
+    .catch(error => {
+      console.error('Lỗi:', error);
     });
   }
+  document.getElementById('locationForm').addEventListener('submit', onSubmitLocation);
+}
+
 
     function editBe(beId) {
       var be = bes.find(function(b) {
