@@ -57,95 +57,93 @@
       zoom: 16
     });
 
-<% @bes.each do |be| %>
-  var el = document.createElement('div');
-  el.className = 'map-marker';
-  var iconClass = '';
-  switch ('<%= be.loaibe %>') {
-    case 'Bể cáp 1 đan':
-      iconClass = 'fa-regular'; // Changed to 'fa-regular' as per your request
-      break;
-    case 'Bể cáp 2 đan':
-      iconClass = 'fa-solid fa-minus'; // Updated icon class for 'Bể cáp 2 đan'
-      break;
-    case 'Hố ga':
-      iconClass = 'fa-solid'; // Set appropriate icon class for 'Hố ga'
-      el.className += ' rectangular-marker'; // Add rectangular class
-      break;
-    default:
-      iconClass = 'fa-solid fa-circle'; // Default icon for unknown types
-  }
-  el.innerHTML = `<i class="${iconClass}"></i>`;
+    <% @bes.each do |be| %>
+      var el = document.createElement('div');
+      el.className = 'map-marker';
+      var iconClass = '';
+      switch ('<%= be.loaibe %>') {
+        case 'Bể cáp 1 đan':
+          iconClass = 'fa-regular'; // Changed to 'fa-regular' as per your request
+          break;
+        case 'Bể cáp 2 đan':
+          iconClass = 'fa-solid fa-minus'; // Updated icon class for 'Bể cáp 2 đan'
+          break;
+        case 'Hố ga':
+          iconClass = 'fa-solid'; // Set appropriate icon class for 'Hố ga'
+          el.className += ' rectangular-marker'; // Add rectangular class
+          break;
+        default:
+          iconClass = 'fa-solid fa-circle'; // Default icon for unknown types
+      }
+      el.innerHTML = `<i class="${iconClass}"></i>`;
 
-  var marker = new mapboxgl.Marker({ element: el })
-    .setLngLat([<%= be.longitude %>, <%= be.latitude %>])
-    .addTo(map)
-    // .setPopup(new mapboxgl.Popup({ offset: 25 }).setText('<%= be.id %>'))
-    .getElement().addEventListener('click', function() {
-      var beId = '<%= be.id %>';
-      var coord = [<%= be.longitude %>, <%= be.latitude %>];
+      var marker = new mapboxgl.Marker({ element: el })
+        .setLngLat([<%= be.longitude %>, <%= be.latitude %>])
+        .addTo(map)
+        // .setPopup(new mapboxgl.Popup({ offset: 25 }).setText('<%= be.id %>'))
+        .getElement().addEventListener('click', function() {
+          var beId = '<%= be.id %>';
+          var coord = [<%= be.longitude %>, <%= be.latitude %>];
 
-      if (!selectedBEs.includes(beId)) {
-        selectedBEs.push(beId);
-        coordinates.push(coord);
+          if (!selectedBEs.includes(beId)) {
+            selectedBEs.push(beId);
+            coordinates.push(coord);
 
-        if (coordinates.length > 1) {
-          if (map.getLayer('route')) {
-            map.getSource('route').setData({
-              'type': 'Feature',
-              'geometry': {
-                'type': 'LineString',
-                'coordinates': coordinates
-              }
-            });
-          } else {
-            map.addLayer({
-              'id': 'route',
-              'type': 'line',
-              'source': {
-                'type': 'geojson',
-                'data': {
+            if (coordinates.length > 1) {
+              if (map.getLayer('route')) {
+                map.getSource('route').setData({
                   'type': 'Feature',
                   'geometry': {
                     'type': 'LineString',
                     'coordinates': coordinates
                   }
-                }
-              },
-              'layout': {
-                'line-join': 'round',
-                'line-cap': 'round'
-              },
-              'paint': {
-                'line-color': '#888',
-                'line-width': 8
+                });
+              } else {
+                map.addLayer({
+                  'id': 'route',
+                  'type': 'line',
+                  'source': {
+                    'type': 'geojson',
+                    'data': {
+                      'type': 'Feature',
+                      'geometry': {
+                        'type': 'LineString',
+                        'coordinates': coordinates
+                      }
+                    }
+                  },
+                  'layout': {
+                    'line-join': 'round',
+                    'line-cap': 'round'
+                  },
+                  'paint': {
+                    'line-color': '#888',
+                    'line-width': 8
+                  }
+                });
               }
-            });
-          }
-        }
-        document.getElementById('be-ids-field').value = selectedBEs.join(',');
-      } else {
-        selectedBEs.splice(selectedBEs.indexOf(beId), 1);
-        coordinates = coordinates.filter(coord => coord.toString() !== coord.toString());
-
-        if (coordinates.length > 0) {
-          map.getSource('route').setData({
-            'type': 'Feature',
-            'geometry': {
-              'type': 'LineString',
-              'coordinates': coordinates
             }
-          });
-        } else {
-          map.removeLayer('route');
-          map.removeSource('route');
-        }
-        document.getElementById('be-ids-field').value = selectedBEs.join(',');
-      }
-    });
-<% end %>
+            document.getElementById('be-ids-field').value = selectedBEs.join(',');
+          } else {
+            selectedBEs.splice(selectedBEs.indexOf(beId), 1);
+            coordinates = coordinates.filter(coord => coord.toString() !== coord.toString());
 
-
+            if (coordinates.length > 0) {
+              map.getSource('route').setData({
+                'type': 'Feature',
+                'geometry': {
+                  'type': 'LineString',
+                  'coordinates': coordinates
+                }
+              });
+            } else {
+              map.removeLayer('route');
+              map.removeSource('route');
+            }
+            document.getElementById('be-ids-field').value = selectedBEs.join(',');
+          }
+        });
+    <% end %>
     var coordinates = [];
     var selectedBEs = [];
     var tuyencapsData = [];
@@ -229,12 +227,6 @@
         .addTo(map);
     }
 
-    function showAllRoutes() {
-      // Hiện danh sách tuyến cáp
-      const tuyenCapList = document.getElementById('tuyen-cap-list');
-      tuyenCapList.style.display = (tuyenCapList.style.display === 'none') ? 'block' : 'none';
-    }
-
     function showRoute(tuyencapId) {
       currentTuyencapId = tuyencapId;
 
@@ -316,16 +308,57 @@
       });
     });
     
+    function showAllRoutes() {
+      // Hiện danh sách tuyến cáp
+      const tuyenCapList = document.getElementById('tuyen-cap-list');
+      tuyenCapList.style.display = 'block'; // Hiện danh sách tuyến cáp
+
+      // Ẩn nút "Hiển thị"
+      const showAllRoutesButton = document.getElementById('show-all-routes');
+      showAllRoutesButton.style.display = 'none';
+
+      // Ẩn nút "Tạo mới"
+      const createNewButton = document.getElementById('create-new-btn');
+      createNewButton.style.display = 'none';
+
+      // Hiển thị các nút khác
+      const deleteButton = document.getElementById('delete-changes-btn');
+      const saveButton = document.getElementById('save-changes-btn');
+      const hideRoutesButton = document.getElementById('hide-routes');
+
+      deleteButton.style.display = 'block';
+      saveButton.style.display = 'block';
+      hideRoutesButton.style.display = 'block';
+    }
+
     function closeList() {
-      document.getElementById('tuyen-cap-list').style.display = 'none';
-      // Hide all routes
+      // Ẩn danh sách tuyến cáp
+      const tuyenCapList = document.getElementById('tuyen-cap-list');
+      tuyenCapList.style.display = 'none';
+
+      // Hiển thị lại nút "Tạo mới" và "Hiển thị"
+      const createNewButton = document.getElementById('create-new-btn');
+      createNewButton.style.display = 'block';
+
+      const showAllRoutesButton = document.getElementById('show-all-routes');
+      showAllRoutesButton.style.display = 'block';
+
+      // Ẩn các nút
+      const deleteButton = document.getElementById('delete-changes-btn');
+      const saveButton = document.getElementById('save-changes-btn');
+      const hideRoutesButton = document.getElementById('hide-routes');
+
+      deleteButton.style.display = 'none';
+      saveButton.style.display = 'none';
+      hideRoutesButton.style.display = 'none';
+
+      // Ẩn tất cả các tuyến cáp
       map.getStyle().layers.forEach(layer => {
         if (layer.id.startsWith('route-')) {
           map.setLayoutProperty(layer.id, 'visibility', 'none');
         }
       });
     }
-
     document.getElementById('create-tuyencap').addEventListener('click', function(event) {
       var tenTuyen = document.getElementById('tuyen-cap-ten').value.trim();
       var diembatdau_cap = document.getElementById('diembatdau_cap').value.trim();

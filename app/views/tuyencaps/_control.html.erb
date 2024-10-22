@@ -26,7 +26,7 @@
                             ["Cáp 48 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)", "Cáp 48 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)"],
                             ["Cáp 96 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)", "Cáp 96 Fo (ngầm hoặc treo) (có bọc chống gặm nhấm hoặc không)"]
                           ]), 
-                          { class: 'form-control mr-2' }%>
+                          { class: 'form-control mr-2' } %>
         </div>
       </div>
       <div>
@@ -64,16 +64,10 @@
 </div>
 <div class="comineterb">
   <button id="create-new-btn" class="btn btn-success" style="text-align: center; font-size: 20px;">Tạo mới</button>
-  <button id="delete-changes-btn" class="btn btn-warning" style="text-align: center; font-size: 20px;">Xóa thay đổi</button>
-  <button id="save-changes-btn" class="btn btn-danger" style="text-align: center; font-size: 20px;">Chỉnh sửa</button>
-  <div class="row mb-2">
-    <div class="col">
-      <button onclick="showAllRoutes()" class="btn btn-primary w-100" style="text-align: center; font-size: 20px;">Hiển thị(<span id="route-count">0</span>)</button>
-    </div>
-    <div class="col">
-      <button id="hide-routes" class="btn btn-secondary w-100" style="text-align: center; font-size: 20px;">Ẩn tuyến cáp</button>
-    </div>
-  </div>
+  <button id="delete-changes-btn" class="btn btn-warning" style="text-align: center; font-size: 20px; display: none;">Xóa</button>
+  <button id="save-changes-btn" class="btn btn-danger" style="text-align: center; font-size: 20px; display: none;">Thay đổi</button>
+  <button id="hide-routes" class="btn btn-secondary w-100" style="text-align: center; font-size: 20px; display: none;">Ẩn tuyến cáp</button>
+    <button id="show-all-routes" onclick="showAllRoutes()" class="btn btn-primary w-100" style="text-align: center; font-size: 20px;">Hiển thị(<span id="route-count">0</span>)</button>
   <div class="row mb-2">
     <div class="col">
       <button onclick="zoomIn()" style="text-align: center; font-size: 20px;">+</button>
@@ -83,7 +77,7 @@
     </div>
   </div>
 </div>
-<div id="tuyen-cap-list">
+<div id="tuyen-cap-list" style="display: none;">
    <div class="show-list-tuyencap">
     <button onclick="closeList()" style="text-align: center; background-color: red; width: 20%;">X</button>
     <% @tuyencaps.each do |tuyencap| %>
