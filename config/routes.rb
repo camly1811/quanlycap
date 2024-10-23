@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
   resources :tuyencaps
   root 'bes#index'
-  resources :bes
+  resources :bes do
+    member do
+      delete :destroy
+    end
+  end
   resources :duongongs do
     collection do
       get 'routes'

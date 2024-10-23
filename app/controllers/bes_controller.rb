@@ -47,13 +47,8 @@ class BesController < ApplicationController
     @be.destroy
 
     respond_to do |format|
-      if @be.destroyed?
-        format.html { redirect_to bes_path, notice: 'Be was successfully deleted.' }
-        format.json { render json: { message: 'Be deleted successfully' }, status: :ok }
-      else
-        format.html { redirect_to bes_path, alert: 'Failed to delete Be.' }
-        format.json { render json: { message: 'Failed to delete Be' }, status: :unprocessable_entity }
-      end
+      format.html { redirect_to bes_path, status: :see_other, notice: 'Bể đã được xóa thành công.' }
+      format.json { render json: { message: 'Bể đã xóa thành công' }, status: :ok }
     end
   end
 
