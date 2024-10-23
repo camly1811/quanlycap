@@ -212,20 +212,76 @@
         .catch(error => console.error('Error fetching Tuyencaps:', error));
     }
 
+    function hideRoute(tuyencapId) {
+      map.getStyle().layers.forEach(layer => {
+        if (layer.id.startsWith('route-' + tuyencapId)) {
+          map.removeLayer(layer.id);
+          map.removeSource(layer.id);
+        }
+      });
+    }
     function showPopup(e, tuyencap) {
-      // Create popup content
-      var content = `<h5>${tuyencap.ten_tuyen}</h5>
-                    <p>Bắt đầu: ${tuyencap.diembatdau || 'N/A'}</p>
-                    <p>Kết thúc: ${tuyencap.diemketthuc || 'N/A'}</p>
-                    <p>Phân loại: ${tuyencap.phanloai || 'N/A'}</p>
-                    <p>Đơn vị quản lý: ${tuyencap.dvquanly || 'N/A'}</p> <ul>`;    
-      content += '</ul>';
+      // Tạo nội dung cho popup với nút xóa
+      var content = `
+        <div style="text-align: center;">
+          <h5>${tuyencap.ten_tuyen}</h5>
+        </div>
+        <p>Bắt đầu: ${tuyencap.diembatdau || 'N/A'}</p>
+        <p>Kết thúc: ${tuyencap.diemketthuc || 'N/A'}</p>
+        <p>Phân loại: ${tuyencap.phanloai || 'N/A'}</p>
+        <p>Đơn vị quản lý: ${tuyencap.dvquanly || 'N/A'}</p>
+        <div style="text-align: center;">
+          <button id="delete-tuyencap" class="delete-btn" data-id="${tuyencap.id}">Xóa Tuyến Cáp</button>
+        </div>
+      `;
 
-      // Create and show the popup
-      new mapboxgl.Popup()
+      // Tạo và hiển thị popup
+      var popup = new mapboxgl.Popup()
         .setLngLat(e.lngLat)
         .setHTML(content)
         .addTo(map);
+
+      // Thêm sự kiện cho nút xóa
+      document.getElementById('delete-tuyencap').addEventListener('click', function() {
+        var tuyencapId = this.getAttribute('data-id');
+
+        // Xác nhận xóa
+        if (confirm('Bạn có muốn xóa toàn bộ tuyến cáp này hay không?')) {
+          // Gửi yêu cầu xóa đến máy chủ
+          fetch(`/tuyencaps/${tuyencapId}`, {
+            method: 'DELETE',
+            headers: {
+              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            }
+          })
+          .then(response => {
+            if (response.ok) {
+              // Ẩn đoạn đường
+              hideRoute(tuyencapId);
+              
+              // Ẩn nút tương ứng trong danh sách
+              const buttonToHide = document.querySelector(`button[onclick="showRoute(${tuyencapId})"]`);
+              if (buttonToHide) {
+                buttonToHide.style.display = 'none';
+              }
+
+              // Cập nhật số lượng trong nút "Hiển thị"
+              const routeCountElement = document.getElementById('route-count');
+              const currentCount = parseInt(routeCountElement.textContent, 10);
+              routeCountElement.textContent = currentCount > 0 ? currentCount - 1 : 0; // Trừ đi 1 nếu lớn hơn 0
+
+              // Ẩn popup
+              popup.remove();
+            } else {
+              throw new Error('Lỗi khi xóa tuyencap');
+            }
+          })
+          .catch(error => {
+            console.error('Lỗi:', error);
+            alert('Có lỗi xảy ra khi xóa tuyến cáp.');
+          });
+        }
+      });
     }
 
     function showRoute(tuyencapId) {
@@ -441,6 +497,8 @@
             });
           }
           alert(data.message);
+          // Reset các trường về placeholder
+          this.reset();      
           window.location.reload(); // Bạn có thể bỏ dòng này nếu không muốn reload
         } else {
           alert(data.message);
@@ -456,16 +514,16 @@
         map.removeLayer('route');
         map.removeSource('route');
       }
-
+      
       // Xóa dữ liệu trong các trường nhập liệu
       document.getElementById('tuyen-cap-ten').value = '';
       document.getElementById('diembatdau_cap').value = '';
       document.getElementById('diemketthuc_cap').value = '';
       document.getElementById('be-ids-field').value = '';
 
-      // Đặt lại các trường select
-      document.querySelector('#tuyen-cap-form-container select[name="tuyen_cap[phanloai]"]').value = '';
-      document.querySelector('#tuyen-cap-form-container select[name="tuyen_cap[dvquanly]"]').value = '';
+      // Đặt lại các trường select về giá trị mặc định
+      document.querySelector('#tuyen-cap-form-container select[name="tuyen_cap[phanloai]"]').value = ""; // Chọn "Chọn phân loại"
+      document.querySelector('#tuyen-cap-form-container select[name="tuyen_cap[dvquanly]"]').value = ""; // Chọn "Chọn Đơn Vị Quản Lý"
     });
 
     document.getElementById('save-changes-btn').addEventListener('click', function() {

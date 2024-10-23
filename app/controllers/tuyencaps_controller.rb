@@ -68,7 +68,7 @@ class TuyencapsController < ApplicationController
     @tuyencap.destroy
 
     respond_to do |format|
-      format.html { redirect_to tuyencaps_path, status: :see_other, notice: 'Tuyencap was successfully destroyed.' }
+      format.html { redirect_to tuyencaps_path, status: :see_other, notice: 'Tuyến cáp đã bị xóa thành công.' }
       format.json { head :no_content }
     end
   end
