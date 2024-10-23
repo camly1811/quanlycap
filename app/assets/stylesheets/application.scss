@@ -163,10 +163,13 @@ h3{
 
 .rectangular-marker {
   border-radius: 0%; /* Change to rectangle */
-  width: 30px;
+  width: 23px;
   height: 12px;
 }
 
 .map-marker .fa-sewer {
   color: #000;
+}
+.fa-minus {
+  font-size: 23px;
 }
