@@ -123,12 +123,12 @@ class TuyencapsController < ApplicationController
   def add_connections
     @tuyencap = Tuyencap.find(params[:id])
     be_ids = params[:be_ids].split(',')
-
+  
     if be_ids.size >= 2
       be_ids.each_cons(2) do |be_id_dau, be_id_cuoi|
         TuyencapBe.create(tuyencap: @tuyencap, be_id_dau_id: be_id_dau, be_id_cuoi_id: be_id_cuoi)
       end
-      render json: { success: true, message: 'Đã thêm đường nối thành công.' }
+      render json: { success: true, message: "Đã thêm đường nối thành công tại tuyến: #{@tuyencap.ten_tuyen}" }
     else
       render json: { success: false, message: 'Vui lòng chọn ít nhất hai BEs để thêm đường nối!' }
     end
