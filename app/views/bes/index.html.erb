@@ -59,10 +59,10 @@
       
         var popupContent = `
           <p>Loại bể:&nbsp;${be.loaibe}</p>
-          <p>Địa chỉ:&nbsp;${be.address}</p>
           <p>Đơn vị quản lý:&nbsp;${be.coquan}</p>
           <p>Kinh độ:&nbsp;${be.longitude}</p>
           <p>Vĩ độ:&nbsp;${be.latitude}</p>
+          ${be.address ? `<p>Ghi chú:&nbsp;${be.address}</p>` : ''} <!-- Kiểm tra nếu address không phải null -->
           <div style="text-align: center;">
             <button class="btn btn-primary mr-2" onclick="editBe('${be.id}')">Chỉnh sửa</button>
             <button class="btn btn-danger delete-be" data-id="${be.id}">Xóa</button>
@@ -136,11 +136,17 @@
         // Đổi màu nút về bình thường
         document.getElementById('addLocationButton').style.backgroundColor = '';
 
-        // Gỡ bỏ sự kiện nhấn vào bản đồ nếu không muốn thêm nữa
+        // Gỡ bỏ sự kiện nhấn vào bản đồ
         map.off('click', handleMapClick);
         
         // Ẩn nút "Xong"
         document.getElementById('completeButton').style.display = 'none';
+        
+        // Đóng popup nếu có
+        if (currentPopup) {
+          currentPopup.remove();
+          currentPopup = null;
+        }
       }
     }
 
@@ -154,30 +160,45 @@
       // Hiển thị nút "Xong"
       document.getElementById('completeButton').style.display = 'inline-block';
 
-      var popup = new mapboxgl.Popup({ closeOnClick: false })
+      var popup = new mapboxgl.Popup()
         .setLngLat(e.lngLat)
-        .setHTML('<form id="locationForm" class="container">' +
-          '<input class="form-control" type="text" id="address" name="address" placeholder="Địa chỉ"><br>' +
-          '<select class="form-control" id="loaibe" name="loaibe" required>' +
-            '<option value="" disabled selected>Chọn loại bể</option>' +
-            '<option value="Hố ga">Hố ga</option>' +
-            '<option value="Bể cáp 1 đan">Bể cáp 1 đan</option>' +
-            '<option value="Bể cáp 2 đan">Bể cáp 2 đan</option>' +
-          '</select><br>' +
-          '<select class="form-control" id="coquan" name="coquan" required>' +
-            '<option value="" disabled selected>Đơn vị quản lý</option>' +
-            '<option value="Trung tâm IID">Trung tâm IID</option>' +
-            '<option value="Trung tâm đèn THGT">Trung tâm đèn THGT</option>' +
-            '<option value="VNPT">VNPT</option>' +
-            '<option value="Viettel">Viettel</option>' +
-            '<option value="FPT">FPT</option>' +
-          '</select><br>' +
-          'Kinh độ: ' + lng + '<br>' +
-          'Vĩ độ: ' + lat + '<br><br>' +
-          '<div class="d-flex justify-content-center">' +
-            '<input class="btn btn-primary" type="submit" value="Gửi">' + 
-          '</div>' +
-        '</form>').addTo(map);
+        .setHTML(
+          '<div class="formbg">'+
+          '<div class="formbg-inner padding-horizontal--48">'+
+            '<form id="locationForm" class="container">' +
+              '<div class="field padding-bottom--24">'+
+                '<label for="loaibe">Loại bể:</label>'+
+                '<select class="form-control" id="loaibe" name="loaibe" required>' +
+                  '<option value="" disabled selected>Chọn loại bể</option>' +
+                  '<option value="Hố ga">Hố ga</option>' +
+                  '<option value="Bể cáp 1 đan">Bể cáp 1 đan</option>' +
+                  '<option value="Bể cáp 2 đan">Bể cáp 2 đan</option>' +
+                '</select>' +
+              '</div>'+
+              '<div class="field padding-bottom--24">'+
+                '<label for="coquan">Đơn vị quản lý:</label>'+
+                '<select class="form-control" id="coquan" name="coquan" required>' +
+                  '<option value="" disabled selected>Đơn vị quản lý</option>' +
+                  '<option value="Trung tâm IID">Trung tâm IID</option>' +
+                  '<option value="Trung tâm đèn THGT">Trung tâm đèn THGT</option>' +
+                  '<option value="VNPT">VNPT</option>' +
+                  '<option value="Viettel">Viettel</option>' +
+                  '<option value="FPT">FPT</option>' +
+                '</select>' +
+              '</div>'+
+              '<div class="field padding-bottom--24">'+
+                '<label for="address">Ghi chú:</label>'+
+                '<input type="text" id="address" name="address"' +
+              '</div><br><br>'+
+              'Kinh độ: ' + lng + '<br>' +
+              'Vĩ độ: ' + lat + '<br><br>' +
+              '<div class="d-flex justify-content-center">' +
+                '<input class="btn btn-primary" type="submit" value="Gửi">' + 
+              '</div>' +
+            '</form>' +
+          '</div>'+
+          '</div>') 
+        .addTo(map);
 
       function onSubmitLocation(event) {
         event.preventDefault();
@@ -266,29 +287,51 @@
         return b.id == beId;
       });
 
+      // Close the existing popup (if any)
+      var existingPopup = markers.find(function(marker) {
+        return marker.id === beId;
+      });
+      if (existingPopup && existingPopup.marker.getPopup().isOpen()) {
+        existingPopup.marker.getPopup().remove();
+      }
+
       var popup = new mapboxgl.Popup({ closeOnClick: false })
         .setLngLat([be.longitude, be.latitude])
         .setHTML('<form id="editForm" class="container">' +
-          '<label for="address">Địa chỉ:</label>' +
-          '<input type="text" id="address" name="address" value="' + be.address + '"><br><br>' +
-          '<label for="loaibe">Loại bể:&nbsp &nbsp</label>' +
-          '<select id="loaibe" name="loaibe">' +
-            '<option value="Hố ga"' + (be.loaibe == 'Hố ga' ? ' selected' : '') + '>Hố ga</option>' +
-            '<option value="Bể cáp 1 đan"' + (be.loaibe == 'Bể cáp 1 đan' ? ' selected' : '') + '>Bể cáp 1 đan</option>' +
-            '<option value="Bể cáp 2 đan"' + (be.loaibe == 'Bể cáp 2 đan' ? ' selected' : '') + '>Bể cáp 2 đan</option>' +
-          '</select><br>' +
-          '<label for="coquan">Đơn vị quản lý:</label>' +
-          '<select id="coquan" name="coquan">' +
-            '<option value="Hố ga"' + (be.coquan == 'Trung tâm IID' ? ' selected' : '') + '>Trung tâm IID</option>' +
-            '<option value="Bể cáp 1 đan"' + (be.coquan == 'Trung tâm đèn THGT' ? ' selected' : '') + '>Trung tâm đèn THGT</option>' +
-            '<option value="Bể cáp 2 đan"' + (be.coquan == 'VNPT' ? ' selected' : '') + '>VNPT</option>' +
-            '<option value="Bể cáp 1 đan"' + (be.coquan == 'Viettel' ? ' selected' : '') + '>Viettel</option>' +
-            '<option value="Bể cáp 2 đan"' + (be.coquan == 'FPT' ? ' selected' : '') + '>FPT</option>' +
-          '</select><br>' +
-          'Kinh độ: ' + be.longitude + '<br>' +
-          'Vĩ độ: ' + be.latitude + '<br><br>' +
-          '<div class="d-flex justify-content-center">'+
-            '<input type="submit" value="Cập nhật">' +
+          ' <div>'+
+            '<label class="label-loaibe">' +
+              '<span>Loại bể</span>' +
+              '<select id="loaibe" name="loaibe" tabindex="2" required>' +
+                '<option value="Hố ga"' + (be.loaibe == 'Hố ga' ? ' selected' : '') + '>Hố ga</option>' +
+                '<option value="Bể cáp 1 đan"' + (be.loaibe == 'Bể cáp 1 đan' ? ' selected' : '') + '>Bể cáp 1 đan</option>' +
+                '<option value="Bể cáp 2 đan"' + (be.loaibe == 'Bể cáp 2 đan' ? ' selected' : '') + '>Bể cáp 2 đan</option>' +
+              '</select>' +
+            '</label>'+
+          '</div>'+
+          ' <div>'+
+            '<label class="label-coquan">' +
+              '<span>Đơn vị quản lý</span>'+
+              '<select id="coquan" name="coquan" tabindex="3" required>' +
+                '<option value="Hố ga"' + (be.coquan == 'Trung tâm IID' ? ' selected' : '') + '>Trung tâm IID</option>' +
+                '<option value="Bể cáp 1 đan"' + (be.coquan == 'Trung tâm đèn THGT' ? ' selected' : '') + '>Trung tâm đèn THGT</option>' +
+                '<option value="Bể cáp 2 đan"' + (be.coquan == 'VNPT' ? ' selected' : '') + '>VNPT</option>' +
+                '<option value="Bể cáp 1 đan"' + (be.coquan == 'Viettel' ? ' selected' : '') + '>Viettel</option>' +
+                '<option value="Bể cáp 2 đan"' + (be.coquan == 'FPT' ? ' selected' : '') + '>FPT</option>' +
+              '</select>' +
+            '</label>'+
+          '</div>'+
+          '<div>'+
+            '<label class="label-address">'+
+              '<span class="required">Ghi chú</span>' +
+              '<input type="text" id="address" name="address" value="' + be.address + '">' +
+            '</label>'+
+          '</div>'+
+          '<div class="coordinates">'+
+            'Kinh độ: ' + be.longitude + '<br>' +
+            'Vĩ độ: ' + be.latitude + '<br>' +
+          '</div>'+
+          '<div class="submit-container">'+
+            '<input class="sub-container" type="submit" value="Cập nhật">' +
           '</div>' +
           '</form>').addTo(map);
             
