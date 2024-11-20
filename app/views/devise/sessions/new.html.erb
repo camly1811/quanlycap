@@ -1,0 +1,345 @@
+<div class="background">
+  <div class="section">
+    <div class="row full-height justify-content-center">
+      <div class="col-12 text-center align-self-center py-5">
+        <div class="section pb-5 pt-5 pt-sm-2 text-center">
+          <div class="card-3d-wrap mx-auto">
+            <div class="card-3d-wrapper">
+              <div class="card-front">
+                <div class="center-wrap">
+                  <div class="section text-center">
+                    <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+                      <h4 class="mb-4 pb-3">Đăng nhập hệ thống</h4>
+                      <div class="form-group">
+                        <%= f.email_field :email, class: 'form-style', placeholder: 'Email', autofocus: true, autocomplete: 'email' %>
+                        <i class="input-icon uil uil-at"></i>
+                        <% if params[:user].present? && params[:user][:email].blank? %>
+                          <span class="fa fa-exclamation-circle email-error" title="Chưa nhập email"></span>
+                        <% end %>
+                        <br>
+                      </div>
+                      
+                      <div class="form-group mt-2">
+                        <%= f.password_field :password, class: 'form-style', placeholder: 'Mật khẩu', autocomplete: 'current-password' %>
+                        <i class="input-icon uil uil-lock-alt"></i>
+                        <% if params[:user].present? && params[:user][:password].blank? %>
+                          <span class="fa fa-exclamation-circle password-error" title="Chưa nhập mật khẩu"></span>
+                        <% end %>
+                      </div>
+                      <%# Hiển thị thông báo đăng nhập không thành công nếu có lỗi xác thực từ Devise %>
+                      <% if params[:user].present? && params[:user][:email].present? && params[:user][:password].present? && flash[:alert] %>
+                        <div class="alert alert-danger mt-3">
+                          <span class="dxeBase_Moderno" id="FailureText"><%= flash[:alert] %></span>
+                        </div>
+                      <% end %>
+                      <% if devise_mapping.rememberable? %>
+                        <div class="remember-me">
+                          <%= f.check_box :remember_me, class: 'checkbox' %>
+                          <%= f.label :remember_me, "Nhớ mật khẩu", class: 'remember-me-label' %>
+                        </div>
+                      <% end %>
+
+                      <div class="btn-wrapper">
+                        <%= f.submit "Đăng nhập", class: 'btn mt-4' %>
+                      </div>
+                    <% end %>
+                    <p class="mb-0 mt-4 text-center">
+                      Bạn đang đăng nhập!!!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Đặt hình nền cho phần ngoài form */
+  .background {
+      position: relative;
+      width: 100%;
+      height: 100vh; /* Đảm bảo chiều cao của background là toàn bộ màn hình */
+      background-image: url('https://media.tapchitaichinh.vn/images/upload/hoxuantruong/01182022/19-1.png');
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover; /* Bao phủ toàn bộ màn hình */
+      display: block;
+  }
+
+  h4 {
+    font-weight: 600;
+    color: white;
+  }
+
+  .section {
+    position: relative;
+    width: 100%;
+    display: block;
+    height: 100%;
+  }
+
+  .full-height {
+    min-height: 100%;
+  }
+
+  /* Căn chỉnh và làm đẹp cho checkbox */
+  .remember-me {
+    display: flex;
+    align-items: center;
+    margin-top: 20px;
+  }
+
+  .checkbox {
+    display: none;
+  }
+
+  .remember-me-label {
+    display: inline-flex;
+    color: #fff;
+    cursor: pointer;
+    margin-left: 5px;
+  }
+
+  .remember-me-label:before {
+    content: '';
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #ffeba7; /* Màu viền của checkbox */
+    border-radius: 4px;
+    margin-right: 10px;
+    background-color: transparent;
+    transition: background-color 0.3s, border-color 0.3s;
+  }
+
+  /* Khi checkbox được chọn, thay đổi màu nền thành vàng và dấu tích màu đen */
+  .checkbox:checked + .remember-me-label:before {
+    background-color: #ffeba7;
+    border-color: #ffeba7;
+  }
+
+  .checkbox:checked + .remember-me-label:after {
+    content: '\2713';
+    font-size: 19px;
+    color: black;
+    position: absolute;
+    font-weight: bold;
+  }
+
+  .card-3d-wrap {
+    position: relative;
+    width: 435px;
+    max-width: 100%;
+    height: 500px;
+    transform-style: preserve-3d;
+    perspective: 800px;
+  }
+
+  .card-3d-wrapper {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    transition: all 600ms ease-out;
+  }
+
+  .card-front {
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    background-image: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/1462889/pat.svg');
+    background-position: bottom center;
+    background-repeat: no-repeat;
+    background-size: 300%;
+    position: absolute;
+    border-radius: 6px;
+    left: 0;
+    top: 0;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    -webkit-backface-visibility: hidden;
+    -moz-backface-visibility: hidden;
+    -o-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border: 5px solid #151515;
+    border-radius: 10px;
+    box-shadow: 14px 14px 20px #cbced1, -14px -14px 20px white;
+  }
+
+  .checkbox:checked ~ .card-3d-wrap .card-3d-wrapper {
+    transform: rotateY(180deg);
+  }
+
+  .center-wrap {
+    position: absolute;
+    width: 100%;
+    padding: 0 35px;
+    top: 50%;
+    left: 0;
+    transform: translate3d(0, -50%, 35px) perspective(100px);
+    z-index: 20;
+    display: block;
+  }
+
+  .form-group {
+    position: relative;
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+
+  .form-style {
+    padding: 13px 20px;
+    padding-left: 55px;
+    height: 48px;
+    width: 100%;
+    font-weight: 500;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 22px;
+    letter-spacing: 0.5px;
+    outline: none;
+    color: #c4c3ca;
+    background-color: #1f2029;
+    border: none;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+    box-shadow: 0 4px 8px 0 rgba(21, 21, 21, 0.2);
+  }
+
+  .form-style:focus,
+  .form-style:active {
+    border: none;
+    outline: none;
+    box-shadow: 0 4px 8px 0 rgba(21, 21, 21, 0.2);
+  }
+
+  .input-icon {
+    position: absolute;
+    top: 0;
+    left: 18px;
+    height: 48px;
+    font-size: 24px;
+    line-height: 48px;
+    text-align: left;
+    color: #ffeba7;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+  }
+
+  /* Đặt các icon vào bên phải và tạo màu đỏ */
+  .fa-exclamation-circle {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    color: red; /* Màu đỏ */
+    font-size: 18px; /* Tùy chỉnh kích thước */
+  }
+
+  /* Nếu cần, có thể thêm các lớp riêng cho các trường email và mật khẩu */
+  .email-error, .password-error {
+    right: 10px;
+  }
+
+  .form-group input:-ms-input-placeholder {
+    color: #c4c3ca;
+    opacity: 0.7;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+  }
+
+  .form-group input::-moz-placeholder {
+    color: #c4c3ca;
+    opacity: 0.7;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+  }
+
+  .form-group input:-moz-placeholder {
+    color: #c4c3ca;
+    opacity: 0.7;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+  }
+
+  .form-group input::-webkit-input-placeholder {
+    color: #c4c3ca;
+    opacity: 0.7;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+  }
+
+  .form-group input:focus:-ms-input-placeholder {
+    opacity: 0;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+  }
+
+  .form-group input:focus::-moz-placeholder {
+    opacity: 0;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+  }
+
+  .form-group input:focus:-moz-placeholder {
+    opacity: 0;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+  }
+
+  .form-group input:focus::-webkit-input-placeholder {
+    opacity: 0;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+  }
+
+  .btn {
+    border-radius: 4px;
+    height: 44px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    -webkit-transition: all 200ms linear;
+    transition: all 200ms linear;
+    padding: 0 30px;
+    letter-spacing: 1px;
+    display: -webkit-inline-flex;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    -webkit-align-items: center;
+    -moz-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    -ms-justify-content: center;
+    justify-content: center;
+    -ms-flex-pack: center;
+    text-align: center;
+    border: none;
+    background-color: #ffeba7;
+    color: #102770;
+    box-shadow: 0 8px 24px 0 rgba(255, 235, 167, 0.2);
+  }
+
+  .btn:active,
+  .btn:focus {
+    background-color: #102770;
+    color: #ffeba7;
+    box-shadow: 0 8px 24px 0 rgba(16, 39, 112, 0.2);
+  }
+
+  .btn:hover {
+    background-color: #102770;
+    color: #ffeba7;
+    box-shadow: 0 8px 24px 0 rgba(16, 39, 112, 0.2);
+  }
+</style>

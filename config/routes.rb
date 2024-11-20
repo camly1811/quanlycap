@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  devise_for :users
+  resources :roles do
+    delete :bulk_delete, on: :collection
+  end
   resources :tuyencaps
   root 'bes#index'
   resources :bes do

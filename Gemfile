@@ -79,3 +79,5 @@ gem 'bootstrap', '~> 4.0.0'
 gem 'geocoder', '~> 1.8'
 gem 'jquery-rails'
 gem 'sassc-rails'
+
+gem 'devise', '~> 4.9'

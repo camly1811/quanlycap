@@ -1,4 +1,5 @@
 class BesController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_be, only: %i[show edit update destroy]
 
   # GET /bes or /bes.json

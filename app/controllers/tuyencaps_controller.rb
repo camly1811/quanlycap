@@ -1,6 +1,7 @@
 class TuyencapsController < ApplicationController
   before_action :set_tuyencap, only: %i[show edit update destroy remove_connections]
-
+  before_action :authenticate_user!
+  
   # GET /tuyencaps or /tuyencaps.json
   def index
     @tuyencaps = Tuyencap.all

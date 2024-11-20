@@ -1,4 +1,5 @@
 class DuongongsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_duongong, only: %i[show edit update destroy destroy_route]
 
   # GET /duongongs or /duongongs.json

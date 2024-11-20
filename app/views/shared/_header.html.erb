@@ -1,19 +1,66 @@
-<header class="navbar navbar-expand-lg navbar-dark" style="background-color: #04AA6D;">
-  <div class="container">
-    <div class="collapse navbar-collapse dual-collapse2 w-100 order-1 order-md-0" style="height: 10px;">
-      <div class="mr-auto">
-        <%= link_to root_path, class: "navbar-brand" do %>
+<% if user_signed_in? %>
+  <header class="navbar navbar-expand-lg navbar-dark" style="background-color: #04AA6D;">
+    <div class="container-fluid" style="margin-top: -10px;margin-bottom: -10px;">
+      <!-- Logo phần bên trái -->
+      <div class="navbar-brand">
+        <%= link_to root_path do %>
           <%= image_tag "logo.jpg", alt: "Logo", style: "width: 50px; height: 50px;" %>
         <% end %>
       </div>
-    </div>
+      
+      <!-- Các phần tử menu ở bên phải -->
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-    <div class="collapse navbar-collapse dual-collapse2 w-100 order-1 order-md-0">
-      <div class="ml-auto">
-        <%= link_to "Bể Cáp", bes_path, class: "navbar-brand font-weight-bold", style: "font-size: 1.5rem;" %>
-        <%# <%= link_to "Đường ống", duongongs_path, class: "navbar-brand font-weight-bold", style: "font-size: 2rem;" %>
-        <%= link_to "Tuyến Cáp", tuyencaps_path, class: "navbar-brand font-weight-bold", style: "font-size: 1.5rem;" %>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+          <% if current_user.admin? %>
+            <!-- Menu cho Admin -->
+            <li class="nav-item dropdown">
+              <%= link_to "#", class: "nav-link dropdown-toggle", "data-bs-toggle": "dropdown" do %>
+                CÁP
+              <% end %>
+              <ul class="dropdown-menu overflow-auto">
+                <li><%= link_to 'Bể Cáp', bes_path %></li>
+                <li><%= link_to 'Tuyến Cáp', tuyencaps_path %></li>
+              </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <%= link_to "#", class: "nav-link dropdown-toggle", "data-bs-toggle": "dropdown" do %>
+                HỆ THỐNG
+              <% end %>
+              <ul class="dropdown-menu overflow-auto">
+                <li><%= link_to 'Quản lý người dùng', "" %></li>
+                <li><%= link_to 'Quản lý vai trò', roles_path %></li>
+              </ul>
+            </li>
+
+            <li class="nav-item dropdown">
+              <%= link_to "#", class: "nav-link dropdown-toggle", "data-bs-toggle": "dropdown" do %>
+                ND
+              <% end %>
+              <ul class="dropdown-menu overflow-auto">
+                <li><%= link_to 'Thông tin cá nhân', "" %></li>
+                <li><%= button_to "Đăng xuất", destroy_user_session_path, method: :delete, class: 'dropdown-item' %></li>
+              </ul>
+            </li>
+
+          <% else %>
+            <!-- Menu cho người dùng bình thường -->
+            <li class="nav-item d-none d-lg-block">
+              <%= link_to "Bể Cáp", bes_path, class: 'btn btn-outline-secondary border-0 font-weight-bold btn-custom',style: "font-size: 25px; color: #323537;" %>
+            </li>
+            <li class="nav-item d-none d-lg-block">
+              <%= link_to "Tuyến Cáp", tuyencaps_path, class: 'btn btn-outline-secondary border-0 font-weight-bold',style: "font-size: 25px; color: #323537;" %>
+            </li>
+            <li class="nav-item d-none d-lg-block">
+              <%= button_to "Đăng xuất", destroy_user_session_path, method: :delete, class: 'btn btn-outline-danger border-0 font-weight-bold',style: "font-size: 25px;" %>
+            </li>
+          <% end %>
+        </ul>
       </div>
     </div>
-  </div>
-</header>
+  </header>
+<% end %>
