@@ -91,4 +91,5 @@ Rails.application.configure do
   # Do not dump schema after migrations.
   config.active_record.dump_schema_after_migration = false
   config.secret_key_base = '5bb482ea2675f1dfc29618eea7d8e04f4c69b34f649aa685b219b317c976c7b7160d795c99538d43a944a265420e85263492a999f1e09fdadca34ec56eb4e42c'
+  onfig.action_mailer.default_url_options = { host: '10.208.1.107', protocol: 'http' }
 end
