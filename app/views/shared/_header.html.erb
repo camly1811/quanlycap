@@ -48,15 +48,30 @@
             </li>
 
           <% else %>
-            <!-- Menu cho người dùng bình thường -->
+            <ul class="menu_nav_items"> 
+              <!-- Menu cho người dùng bình thường ở chế độ nhỏ (dễ đọc hơn trong mobile) -->
+              <li class="nav-item d-lg-none d-flex justify-content-between">
+                <%= link_to 'Bể Cáp', bes_path, class: 'nav-link btn btn-outline-secondary border-0 font-weight-bold btn-custom' %>
+              </li>
+
+              <li class="nav-item d-lg-none d-flex justify-content-between">
+                <%= link_to 'Tuyến Cáp', tuyencaps_path, class: 'nav-link btn btn-outline-secondary border-0 font-weight-bold' %>
+              </li>
+
+              <li class="nav-item d-lg-none d-flex justify-content-between">
+                <%= button_to "Đăng xuất", destroy_user_session_path, method: :delete, class: 'btn btn-outline-danger border-0 font-weight-bold'%>
+              </li>
+            </ul>
+
+            <!-- Menu cho người dùng bình thường ở chế độ lớn -->
             <li class="nav-item d-none d-lg-block">
-              <%= link_to "Bể Cáp", bes_path, class: 'btn btn-outline-secondary border-0 font-weight-bold btn-custom',style: "font-size: 25px; color: #323537;" %>
+              <%= link_to "Bể Cáp", bes_path, class: 'btn btn-outline-secondary border-0 font-weight-bold btn-custom', style: "font-size: 25px; color: #323537;" %>
             </li>
             <li class="nav-item d-none d-lg-block">
-              <%= link_to "Tuyến Cáp", tuyencaps_path, class: 'btn btn-outline-secondary border-0 font-weight-bold',style: "font-size: 25px; color: #323537;" %>
+              <%= link_to "Tuyến Cáp", tuyencaps_path, class: 'btn btn-outline-secondary border-0 font-weight-bold', style: "font-size: 25px; color: #323537;" %>
             </li>
             <li class="nav-item d-none d-lg-block">
-              <%= button_to "Đăng xuất", destroy_user_session_path, method: :delete, class: 'btn btn-outline-danger border-0 font-weight-bold',style: "font-size: 25px;" %>
+              <%= button_to "Đăng xuất", destroy_user_session_path, method: :delete, class: 'btn btn-outline-danger border-0 font-weight-bold', style: "font-size: 25px;" %>
             </li>
           <% end %>
         </ul>
@@ -64,3 +79,15 @@
     </div>
   </header>
 <% end %>
+<style>
+/* Nếu bạn muốn chúng nhỏ hơn và thêm một chút padding, bạn có thể điều chỉnh kích thước */
+@media (max-width: 999px) {
+  .menu_nav_items{
+    display: flex;
+    justify-content: flex-end;
+  }
+  .nav-item {
+    margin: 5px; /* Khoảng cách giữa các item */
+  }
+}
+</style>
