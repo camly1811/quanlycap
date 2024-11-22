@@ -23,9 +23,9 @@
               <% end %>
               <ul class="dropdown-menu dropdown-menu-left overflow-auto">
                 <li class = "titile_li"><%= link_to 'Bể Cáp', bes_path %></li>
-                <li><%= link_to 'Quản lý Bể Cáp', bes_path %></li>
-                <li><%= link_to 'Tuyến Cáp', tuyencaps_path %></li>
-                <li><%= link_to 'Quản lý Tuyến Cáp', tuyencaps_path %></li>
+                <li class = "titile_li"><%= link_to 'Quản lý Bể Cáp', bes_path %></li>
+                <li class = "titile_li"><%= link_to 'Tuyến Cáp', tuyencaps_path %></li>
+                <li class = "titile_li"><%= link_to 'Quản lý Tuyến Cáp', tuyencaps_path %></li>
               </ul>
             </li>
 
@@ -34,8 +34,8 @@
                 HỆ THỐNG
               <% end %>
               <ul class="dropdown-menu dropdown-menu-left overflow-auto">
-                <li><%= link_to 'Quản lý người dùng', admin_users_path %></li>
-                <li><%= link_to 'Quản lý vai trò', roles_path %></li>
+                <li class = "titile_li"><%= link_to 'Quản lý người dùng', admin_users_path %></li>
+                <li class = "titile_li"><%= link_to 'Quản lý vai trò', roles_path %></li>
               </ul>
             </li>
 
@@ -44,9 +44,9 @@
                 <%= "#{current_user.full_name}" %> <!-- Hiển thị tên đầy đủ -->
               <% end %>
               <ul class="dropdown-menu dropdown-menu-left overflow-auto">
-                <li><%= link_to 'Thông tin cá nhân', admin_user_current_path %></li>
-                <li><%= link_to 'Đổi mật khẩu', admin_user_change_password_path(current_user) %></li>
-                <li><%= button_to "Đăng xuất", destroy_user_session_path, method: :delete, class: 'dropdown-item' %></li>
+                <li class = "titile_li"><%= link_to 'Thông tin cá nhân', admin_user_current_path %></li>
+                <li class = "titile_li"><%= link_to 'Đổi mật khẩu', admin_user_change_password_path(current_user) %></li>
+                <li class = "titile_li"><%= button_to "Đăng xuất", destroy_user_session_path, method: :delete, class: 'dropdown-item' %></li>
               </ul>
             </li>
 

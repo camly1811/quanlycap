@@ -1,5 +1,12 @@
 <div class="container">
   <h2>QUẢN LÝ NGƯỜI DÙNG</h2>
+  <div class="button-container">
+    <%= link_to new_admin_user_path, class: "primary", title: "Add New Data" do %>
+      <svg viewBox="0 0 512 512" width="16" title="plus-circle">
+        <path d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm144 276c0 6.6-5.4 12-12 12h-92v92c0 6.6-5.4 12-12 12h-56c-6.6 0-12-5.4-12-12v-92h-92c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h92v-92c0-6.6 5.4-12 12-12h56c6.6 0 12 5.4 12 12v92h92c6.6 0 12 5.4 12 12v56z"/>
+      </svg>
+    <% end %>
+  </div>
   <ul class="responsive-table">
     <!-- Table Header -->
     <li class="table-header">
@@ -9,25 +16,70 @@
       <div class="col col-4">Số điện thoại</div>
       <div class="col col-5">Địa chỉ</div>
       <div class="col col-6">Vai trò</div>
-      <div class="col col-7"></div>
+      <div class="col col-1"></div>
     </li>
     <!-- Loop over users to create table rows -->
     <% @users.each do |user| %>
       <li class="table-row">
-        <div class="col col-2" data-label="Full Name"><%= user.full_name %></div>
-        <div class="col col-2" data-label="Email"><%= user.email %></div>
-        <div class="col col-3" data-label="Gender"><%= user.gender == "male" ? "Nam" : user.gender == "female" ? "Nữ" : "Khác" %></div>
-        <div class="col col-4" data-label="Phone"><%= user.phone %></div>
-        <div class="col col-5" data-label="Address"><%= user.address %></div>
-        <div class="col col-6" data-label="Role"><%= user.roles.map { |role| { 1 => 'Quản trị viên', 2 => 'Người dùng', 3 => 'Người điều hành' }[role.id] }.join(', ') %></div>
-        <div class="col col-7" data-label="Actions">
-          <%= link_to 'Show', "" %> <!-- Show link to user details -->
+        <div class="col col-2 title_col" data-label="Full Name"><%=link_to user.full_name %></div>
+        <div class="col col-2 title_col" data-label="Email"><%= link_to user.email %></div>
+        <div class="col col-3 title_col" data-label="Gender"><%= link_to user.gender == "male" ? "Nam" : user.gender == "female" ? "Nữ" : "Khác" %></div>
+        <div class="col col-4 title_col" data-label="Phone"><%= link_to user.phone %></div>
+        <div class="col col-5 title_col" data-label="Address"><%= link_to user.address %></div>
+        <div class="col col-6 title_col" data-label="Role"><%= link_to user.roles.map { |role| { 1 => 'Quản trị viên', 2 => 'Người dùng', 3 => 'Người điều hành' }[role.id] }.join(', ') %></div>
+        <div class="col col-1 act_submit" data-label="Actions">
+          <%= button_to admin_user_path(user), method: :delete, data: { confirm: 'Bạn có chắc muốn xóa người dùng này?' }, class: "btn btn-outline-danger" do %>
+            <i class="fas fa-trash-alt"></i> <!-- Icon xóa từ FontAwesome -->
+          <% end %>
         </div>
       </li>
     <% end %>
   </ul>
 </div>
 <style>
+.button-container {
+  width: 100%;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
+  margin-left: 15px;
+}
+.button-container button {
+  font-family: inherit;
+  font-size: inherit;
+  color: #ffffff;
+  padding: 10px;
+  border: 0;
+  margin: 0;
+  outline: 0;
+  border-radius: 3px;
+  transition: background-color 225ms ease-out;
+}
+
+.primary {
+  background-color: #147eff;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  text-decoration: none; /* Đảm bảo không có gạch chân */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  border: none;
+}
+
+.primary:hover {
+  background-color: lighten(#147eff, 10%);
+}
+
+.act_submit a{
+
+}
+.title_col a{
+  color: black;
+}
 body {
   font-family: 'Lato', sans-serif;
 }

@@ -1,12 +1,12 @@
 Rails.application.routes.draw do
   namespace :admin do
-    resources :users, only: [:index] do
+    resources :users, only: %i[index destroy new create] do
       get 'change_password', to: 'users#change_password', as: :change_password
       patch 'update_password', to: 'users#update_password'
     end
     get 'user/current', to: 'users#show_current'
   end
-  devise_for :users
+  devise_for :users, controllers: { registrations: 'registrations' }
   resources :roles do
     delete :bulk_delete, on: :collection
   end

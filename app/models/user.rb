@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_and_belongs_to_many :roles
   
   enum gender: { male: 0, female: 1, other: 2 }
-  validates :first_name, :last_name, presence: true
+  # validates :first_name, :last_name, presence: true
   validates :username, presence: true
   # validates :phone, format: { with: /\A(03[2-9]|05[6|8|9]|07[0|6-9]|08[1-9]|09[0-9])\d{7}\z/ }
 

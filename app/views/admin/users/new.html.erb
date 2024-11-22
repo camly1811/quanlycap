@@ -1,8 +1,7 @@
 <div class="body-container">
-  <h2 class="form-title">Đăng ký tài khoản</h2>
+  <h2 class="form-title">Đăng Ký Người Dùng Mới</h2>
 
-  <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: 'registration-form' }) do |f| %>
-    <%= render "devise/shared/error_messages", resource: resource %>
+  <%= form_for @user, url: admin_users_path, html: { class: 'registration-form' }  do |f| %>
     <div class="form-group">
       <%= f.label :last_name, "Họ" %>
       <%= f.text_field :last_name, autofocus: true, class: "form-control" %>
@@ -28,7 +27,7 @@
         <%= f.label :gender, "Giới tính" %>
         <%= f.select :gender, 
             [['Nam', 'male'], ['Nữ', 'female'], ['Khác', 'other']], 
-            { prompt: 'Chọn giới tính' }, 
+            { prompt: 'Chọn giới tính', selected: '' }, 
             class: "form-control" %>
       </div>
 
@@ -36,37 +35,51 @@
         <%= f.label :role_ids, "Chọn vai trò" %>
         <%= f.select :role_ids, 
             [['Quản trị viên', 1], ['Người dùng', 2], ['Người điều hành', 3]], 
-            { include_blank: false, selected: 1, disabled: true }, 
-            class: "form-control" %>
+            { include_blank: false, selected: 1, disabled: true }, class: "form-control" %>
       </div>
     </div>
 
     <div class="form-group">
       <%= f.label :email, "Email" %>
       <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control" %>
-    </div>
-
-    <div class="form-group">
-      <%= f.label :password, "Mật khẩu" %>
-      <% if @minimum_password_length %>
-        <em class="password-info">(Tối thiểu <%= @minimum_password_length %> ký tự)</em>
+      <% if @user.errors[:email].any? %>
+        <div class="error-message">
+          <%= @user.errors[:email].join(", ") %>
+        </div>
       <% end %>
-      <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
     </div>
 
-    <div class="form-group">
-      <%= f.label :password_confirmation, "Xác nhận mật khẩu" %>
-      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
+<div class="form-group">
+  <%= f.label :password, "Mật khẩu <em class='password-info'>(Tối thiểu 6 ký tự)</em>".html_safe %>
+  <%= f.password_field :password, autocomplete: "new-password", class: "form-control" %>
+  <% if @user.errors[:password].any? %>
+    <div class="error-message">
+      <%= @user.errors[:password].join(", ") %>
     </div>
+  <% end %>
+</div>
+
+<div class="form-group">
+  <%= f.label :password_confirmation, "Xác nhận mật khẩu" %>
+  <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control" %>
+  <% if @user.errors[:password_confirmation].any? %>
+    <div class="error-message">
+      <%= @user.errors[:password_confirmation].join(", ") %>
+    </div>
+  <% end %>
+</div>
 
     <div class="form-group form-action">
       <%= f.submit "Đăng ký", class: "btn btn-primary" %>
     </div>
-    
   <% end %>
 </div>
 <style>
-  /* Reset một số kiểu mặc định */
+  .password-info {
+    font-size: 0.9rem;
+    color: #777;
+  }
+
   .body-container {
     font-family: Arial, sans-serif;
     background-color: #f4f7fa;
@@ -93,18 +106,18 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-
   .form-group {
     margin-bottom: 20px;
   }
-
   .form-group label {
     font-size: 1rem;
     color: #333;
     margin-bottom: 5px;
     display: block;
   }
-
+  select#user_gender.form-control, select#user_role_ids.form-control  {
+    height: 70%;
+  }
   .form-control {
     width: 100%;
     padding: 10px;
@@ -113,20 +126,10 @@
     border-radius: 5px;
     background-color: #f9f9f9;
   }
-
   .form-control:focus {
     border-color: #007bff;
     background-color: #fff;
     outline: none;
-  }
-
-  .password-info {
-    font-size: 0.9rem;
-    color: #777;
-  }
-
-  .form-action {
-    text-align: center;
   }
 
   .btn {
@@ -139,21 +142,11 @@
     cursor: pointer;
     width: 100%;
   }
-
   .btn:hover {
     background-color: #0056b3;
   }
 
   .btn:focus {
     outline: none;
-  }
-
-  .row {
-    display: flex;
-    gap: 20px; /* Khoảng cách giữa hai cột */
-  }
-
-  .col {
-    flex: 1; /* Chia đều không gian giữa các cột */
   }
 </style>
