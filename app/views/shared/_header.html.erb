@@ -4,7 +4,7 @@
       <!-- Logo phần bên trái -->
       <div class="navbar-brand">
         <%= link_to root_path do %>
-          <%= image_tag "logo.jpg", alt: "Logo", style: "width: 50px; height: 50px;" %>
+          <%= image_tag "dsp_logologo.png", alt: "Logo", style: "width: 100px; height: 53px;" %>
         <% end %>
       </div>
       
@@ -21,9 +21,11 @@
               <%= link_to "#", class: "nav-link dropdown-toggle", "data-bs-toggle": "dropdown" do %>
                 CÁP
               <% end %>
-              <ul class="dropdown-menu overflow-auto">
-                <li><%= link_to 'Bể Cáp', bes_path %></li>
+              <ul class="dropdown-menu dropdown-menu-left overflow-auto">
+                <li class = "titile_li"><%= link_to 'Bể Cáp', bes_path %></li>
+                <li><%= link_to 'Quản lý Bể Cáp', bes_path %></li>
                 <li><%= link_to 'Tuyến Cáp', tuyencaps_path %></li>
+                <li><%= link_to 'Quản lý Tuyến Cáp', tuyencaps_path %></li>
               </ul>
             </li>
 
@@ -31,18 +33,19 @@
               <%= link_to "#", class: "nav-link dropdown-toggle", "data-bs-toggle": "dropdown" do %>
                 HỆ THỐNG
               <% end %>
-              <ul class="dropdown-menu overflow-auto">
-                <li><%= link_to 'Quản lý người dùng', "" %></li>
+              <ul class="dropdown-menu dropdown-menu-left overflow-auto">
+                <li><%= link_to 'Quản lý người dùng', admin_users_path %></li>
                 <li><%= link_to 'Quản lý vai trò', roles_path %></li>
               </ul>
             </li>
 
             <li class="nav-item dropdown">
-              <%= link_to "#", class: "nav-link dropdown-toggle", "data-bs-toggle": "dropdown" do %>
-                ND
+              <%= link_to "#", class: "nav-link dropdown-toggle last", "data-bs-toggle": "dropdown" do %>
+                <%= "#{current_user.full_name}" %> <!-- Hiển thị tên đầy đủ -->
               <% end %>
-              <ul class="dropdown-menu overflow-auto">
-                <li><%= link_to 'Thông tin cá nhân', "" %></li>
+              <ul class="dropdown-menu dropdown-menu-left overflow-auto">
+                <li><%= link_to 'Thông tin cá nhân', admin_user_current_path %></li>
+                <li><%= link_to 'Đổi mật khẩu', admin_user_change_password_path(current_user) %></li>
                 <li><%= button_to "Đăng xuất", destroy_user_session_path, method: :delete, class: 'dropdown-item' %></li>
               </ul>
             </li>
@@ -73,6 +76,16 @@
             <li class="nav-item d-none d-lg-block">
               <%= button_to "Đăng xuất", destroy_user_session_path, method: :delete, class: 'btn btn-outline-danger border-0 font-weight-bold', style: "font-size: 25px;" %>
             </li>
+            <li class="nav-item dropdown">
+              <%= link_to "#", class: "nav-link dropdown-toggle last", "data-bs-toggle": "dropdown" do %>
+                <i class="fas fa-user-circle" style="font-size: 30px; color: #323537;"></i>
+              <% end %>
+              <!-- Thêm lớp "dropdown-menu-left" để di chuyển menu sang bên trái -->
+              <ul class="dropdown-menu dropdown-left overflow-auto">
+                <li><%= link_to 'Thông tin cá nhân', admin_user_current_path %></li>
+                <li><%= link_to 'Đổi mật khẩu', admin_user_change_password_path(current_user) %></li>              
+              </ul>
+            </li>
           <% end %>
         </ul>
       </div>
@@ -80,14 +93,102 @@
   </header>
 <% end %>
 <style>
-/* Nếu bạn muốn chúng nhỏ hơn và thêm một chút padding, bạn có thể điều chỉnh kích thước */
-@media (max-width: 999px) {
-  .menu_nav_items{
-    display: flex;
-    justify-content: flex-end;
+  .titile_li a{
+    color: black;
   }
-  .nav-item {
-    margin: 5px; /* Khoảng cách giữa các item */
+  /* Hiển thị dropdown khi hover */
+  .nav-item.dropdown:hover .dropdown-menu {
+    display: block;
+    position: absolute; /* Đảm bảo menu hiển thị đúng vị trí */
+    background-color: #fff; /* Đảm bảo nền của menu */
+    z-index: 1000; /* Đảm bảo menu ở trên các phần tử khác */
+    padding: 0; /* Xóa bỏ padding mặc định */
+    width: auto; /* Để chiều rộng tự động */
   }
-}
+
+  /* Đảm bảo rằng menu dropdown hiển thị khi click */
+  .nav-item.dropdown.show .dropdown-menu {
+    display: block; /* Ẩn menu mặc định */
+  }
+  /* Căn giữa nội dung trong mỗi li */
+  .nav-item.dropdown .dropdown-menu li {
+    display: flex; /* Sử dụng flexbox để căn giữa */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+    padding: 12px 0px 10px 0px;
+    text-align: center; /* Đảm bảo chữ nằm ở giữa */
+    cursor: pointer; /* Chỉ con trỏ chuột khi hover vào li */
+  }
+  .nav-link.dropdown-toggle::after {
+    display: none;
+  }
+  /* CSS để di chuyển dropdown-menu sang bên trái */
+  .dropdown-menu-left {
+    left: -20px; /* Điều chỉnh khoảng cách để hiển thị menu sang bên trái */
+    right: auto;  /* Bỏ mặc định right nếu có */
+  }
+  .dropdown-left{
+    left: -85px;
+  }
+  /* Nếu bạn muốn chúng nhỏ hơn và thêm một chút padding, bạn có thể điều chỉnh kích thước */
+  @media (max-width: 999px) {
+    .menu_nav_items{
+      display: flex;
+      justify-content: flex-end;
+      margin-left: -50px;
+      margin-top: -15px;
+    }
+    .nav-item {
+      margin: 5px; /* Khoảng cách giữa các item */
+    }
+  }
+  /* Căn chỉnh menu admin trên màn hình nhỏ */
+  @media (max-width: 999px) {
+    .navbar-nav {
+      display: flex;
+      flex-direction: row; /* Căn chỉnh các item theo chiều ngang */
+      width: 100%; /* Đảm bảo các item chiếm hết chiều rộng */
+      margin-top: -15px;
+    }
+
+    .navbar-nav .nav-item {
+      margin: 5px; /* Khoảng cách giữa các item trong menu */
+    }
+    .navbar-brand {
+      padding-top: 0px;
+      padding-bottom: 0px;
+    }
+  }
 </style>
+<!-- Thêm vào trong phần <script> của bạn hoặc trong một file JS riêng -->
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Lấy tất cả các dropdown menu
+    const dropdowns = document.querySelectorAll('.nav-item.dropdown');
+
+    // Lặp qua từng dropdown và gán sự kiện hover
+    dropdowns.forEach(function(dropdown) {
+      const menu = dropdown.querySelector('.dropdown-menu');
+      
+      // Hiển thị dropdown khi di chuột vào
+      dropdown.addEventListener('mouseover', function() {
+        menu.style.display = 'block'; // Hiển thị menu
+      });
+
+      // Đảm bảo dropdown vẫn hiển thị khi chuột di chuyển trong menu
+      menu.addEventListener('mouseenter', function() {
+        menu.style.display = 'block'; // Giữ menu mở khi hover vào bên trong menu
+      });
+
+      // Ẩn dropdown khi di chuột ra ngoài
+      dropdown.addEventListener('mouseout', function() {
+        menu.style.display = 'none'; // Ẩn menu khi chuột ra ngoài
+      });
+
+      // Đảm bảo rằng menu không bị ẩn nếu chuột ở trong dropdown
+      menu.addEventListener('mouseleave', function() {
+        menu.style.display = 'none'; // Ẩn menu khi chuột di chuyển ra ngoài
+      });
+    });
+  });
+</script>
