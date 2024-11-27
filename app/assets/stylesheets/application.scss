@@ -282,3 +282,10 @@ h3{
 .label-address input{
   padding: 4px 24px 7px 7px;
 }
+.error-message {
+  color: #dd0d0d;
+  font-style: italic;      /* In nghiêng */
+}
+.error-message::first-letter {
+  text-transform: capitalize; /* Viết hoa chữ cái đầu mỗi từ */
+}

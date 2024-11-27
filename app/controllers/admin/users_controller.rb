@@ -1,9 +1,9 @@
 module Admin
   class UsersController < ApplicationController
     before_action :authenticate_user!
-    # before_action :check_admin
+    before_action :check_admin
     def index
-      @users = User.all.includes(:roles) # Sử dụng `includes(:roles)` để tránh N+1 query
+      @users = User.all.includes(:roles)
     end
     
     def show_current

@@ -1,5 +1,6 @@
 <div class="container">
   <h2>QUẢN LÝ NGƯỜI DÙNG</h2>
+
   <div class="button-container">
     <%= link_to new_admin_user_path, class: "primary", title: "Add New Data" do %>
       <svg viewBox="0 0 512 512" width="16" title="plus-circle">
@@ -7,21 +8,23 @@
       </svg>
     <% end %>
   </div>
+
   <ul class="responsive-table">
     <!-- Table Header -->
     <li class="table-header">
-      <div class="col col-2">Họ và tên</div>
-      <div class="col col-2">Email</div>
-      <div class="col col-3">Giới tính</div>
-      <div class="col col-4">Số điện thoại</div>
-      <div class="col col-5">Địa chỉ</div>
-      <div class="col col-6">Vai trò</div>
+      <div class="col col-2" data-column="name">Họ và tên</div>
+      <div class="col col-2" data-column="email">Email</div>
+      <div class="col col-3" data-column="gender">Giới tính</div>
+      <div class="col col-4" data-column="phone">Số điện thoại</div>
+      <div class="col col-5" data-column="address">Địa chỉ</div>
+      <div class="col col-6" data-column="role">Vai trò</div>
       <div class="col col-1"></div>
     </li>
+
     <!-- Loop over users to create table rows -->
     <% @users.each do |user| %>
       <li class="table-row">
-        <div class="col col-2 title_col" data-label="Full Name"><%=link_to user.full_name %></div>
+        <div class="col col-2 title_col" data-label="Full Name"><%= link_to user.full_name %></div>
         <div class="col col-2 title_col" data-label="Email"><%= link_to user.email %></div>
         <div class="col col-3 title_col" data-label="Gender"><%= link_to user.gender == "male" ? "Nam" : user.gender == "female" ? "Nữ" : "Khác" %></div>
         <div class="col col-4 title_col" data-label="Phone"><%= link_to user.phone %></div>
@@ -36,6 +39,90 @@
     <% end %>
   </ul>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Lưu trữ trạng thái sắp xếp của các cột
+  const sortState = {
+    name: 'asc',    // 'asc' là sắp xếp tăng dần, 'desc' là sắp xếp giảm dần
+    email: 'asc',
+    gender: 'asc',
+    phone: 'asc',
+    address: 'asc',
+    role: 'asc',
+  };
+
+  // Lấy tất cả các cột tiêu đề
+  const headers = document.querySelectorAll(".table-header .col");
+
+  headers.forEach(header => {
+    header.addEventListener("click", function() {
+      const column = header.getAttribute("data-column");
+      const rows = Array.from(document.querySelectorAll(".table-row"));
+      let sortedRows;
+
+      // Sắp xếp các dòng theo cột và trạng thái sắp xếp
+      if (column === "name") {
+        sortedRows = sortColumn(rows, column, sortState[column]);
+        sortState[column] = (sortState[column] === 'asc') ? 'desc' : 'asc';
+      } else if (column === "email") {
+        sortedRows = sortColumn(rows, column, sortState[column]);
+        sortState[column] = (sortState[column] === 'asc') ? 'desc' : 'asc';
+      } else if (column === "gender") {
+        sortedRows = sortColumn(rows, column, sortState[column]);
+        sortState[column] = (sortState[column] === 'asc') ? 'desc' : 'asc';
+      } else if (column === "phone") {
+        sortedRows = sortColumn(rows, column, sortState[column]);
+        sortState[column] = (sortState[column] === 'asc') ? 'desc' : 'asc';
+      } else if (column === "address") {
+        sortedRows = sortColumn(rows, column, sortState[column]);
+        sortState[column] = (sortState[column] === 'asc') ? 'desc' : 'asc';
+      } else if (column === "role") {
+        sortedRows = sortColumn(rows, column, sortState[column]);
+        sortState[column] = (sortState[column] === 'asc') ? 'desc' : 'asc';
+      }
+
+      // Đưa các dòng đã sắp xếp vào lại bảng
+      const tableBody = document.querySelector(".responsive-table");
+      sortedRows.forEach(row => tableBody.appendChild(row));
+    });
+  });
+
+  // Hàm sắp xếp cột
+  function sortColumn(rows, column, order) {
+    return rows.sort((a, b) => {
+      const valueA = getColumnValue(a, column);
+      const valueB = getColumnValue(b, column);
+
+      if (order === 'asc') {
+        return valueA > valueB ? 1 : (valueA < valueB ? -1 : 0);
+      } else {
+        return valueA < valueB ? 1 : (valueA > valueB ? -1 : 0);
+      }
+    });
+  }
+
+  // Hàm lấy giá trị của cột
+  function getColumnValue(row, column) {
+    switch (column) {
+      case 'name':
+        return row.querySelector('.col-2').innerText.trim();
+      case 'email':
+        return row.querySelector('.col-2').innerText.trim();
+      case 'gender':
+        return row.querySelector('.col-3').innerText.trim();
+      case 'phone':
+        return row.querySelector('.col-4').innerText.trim();
+      case 'address':
+        return row.querySelector('.col-5').innerText.trim();
+      case 'role':
+        return row.querySelector('.col-6').innerText.trim();
+      default:
+        return '';
+    }
+  }
+});
+</script>
 <style>
 .button-container {
   width: 100%;
@@ -118,6 +205,10 @@ h2 small {
   padding: 15px;
   text-align: center; /* Center the text in the header */
   font-weight: bold;
+}
+
+.table-header .col:hover {
+  color: #0056b3;  /* Màu chữ khi hover */
 }
 
 .table-row {

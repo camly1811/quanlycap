@@ -34,6 +34,10 @@ Rails.application.routes.draw do
       post 'remove_connections'
     end
   end
+  resources :users, only: [:show] do
+    get 'change_password', to: 'users#change_password', as: :change_password
+    patch 'update_password', to: 'users#update_password'
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Defines the root path route ("/")

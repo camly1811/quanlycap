@@ -82,8 +82,8 @@
               <% end %>
               <!-- Thêm lớp "dropdown-menu-left" để di chuyển menu sang bên trái -->
               <ul class="dropdown-menu dropdown-left overflow-auto">
-                <li><%= link_to 'Thông tin cá nhân', admin_user_current_path %></li>
-                <li><%= link_to 'Đổi mật khẩu', admin_user_change_password_path(current_user) %></li>              
+                <li><%= link_to 'Thông tin cá nhân', user_path(current_user) %></li>
+                <li><%= link_to 'Đổi mật khẩu', user_change_password_path(current_user) %></li>              
               </ul>
             </li>
           <% end %>

@@ -1,0 +1,82 @@
+<!-- app/views/users/show_current.html.erb -->
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <h4 class="card-title text-center">Thông tin cá nhân của bạn</h4>
+    </div>
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <strong>Họ tên:</strong>
+        </div>
+        <div class="col-md-8">
+          <%= @user.full_name %>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <strong>Email:</strong>
+        </div>
+        <div class="col-md-8">
+          <%= @user.email %>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <strong>Giới tính:</strong>
+        </div>
+        <div class="col-md-8">
+          <%= @user.gender == "male" ? "Nam" : @user.gender == "female" ? "Nữ" : "Khác" %>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <strong>Số điện thoại:</strong>
+        </div>
+        <div class="col-md-8">
+          <%= @user.phone %>
+        </div>
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <strong>Địa chỉ:</strong>
+        </div>
+        <div class="col-md-8">
+          <%= @user.address %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<style>
+/* app/assets/stylesheets/application.css */
+.card {
+  margin: 60px 190px;
+  border: 1px solid #ddd; /* Đặt viền nhẹ cho card */
+  border-radius: 8px; /* Tạo các góc tròn cho card */
+  max-width: 668px;
+}
+
+.card-header {
+  background-color: #484040;
+  font-weight: bold; /* Làm đậm tiêu đề */
+}
+
+.card-body {
+  background-color: #fff; /* Màu nền trắng cho phần nội dung */
+  padding-left: 20%;
+}
+
+.card-title {
+  font-size: 2.5rem; /* Tăng kích thước font cho tiêu đề */
+  color: white;
+}
+
+.row {
+  font-size: 1.1rem; /* Tăng kích thước font cho thông tin cá nhân */
+}
+</style>
