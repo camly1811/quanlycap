@@ -1,0 +1,65 @@
+# Additional translations at https://github.com/heartcombo/devise/wiki/I18n
+
+vi:
+  devise:
+    confirmations:
+      confirmed: "Xác thực email thành công."
+      send_instructions: "Bạn sẽ nhận được email hướng dẫn xác thực trong vài phút."
+      send_paranoid_instructions: "Nếu email tồn tại, bạn sẽ nhận được email hướng dẫn xác thực trong vài phút."
+    failure:
+      already_authenticated: "Bạn đã dăng nhập."
+      inactive: "Tài khoản của bạn chưa được kích hoạt."
+      invalid: "Mật khẩu hoặc %{authentication_keys} không hợp lệ."
+      locked: "Tài khoản của bạn bị khoá."
+      last_attempt: "Bạn còn 1 lần thử trước khi tài khoản bị khoá."
+      not_found_in_database: "Mật khẩu hoặc %{authentication_keys} không tồn tại."
+      timeout: "Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại để tiếp tục."
+      unauthenticated: "Bạn cần dăng ký hoặc đăng nhập để tiếp tục."
+      unconfirmed: "Bạn cần phải xác thực email để tiếp tục."
+    mailer:
+      confirmation_instructions:
+        subject: "Hướng dẫn xác thực"
+      reset_password_instructions:
+        subject: "Hướng dẫn đặt lại mật khẩu"
+      unlock_instructions:
+        subject: "Hướng dẫn mở khoá tài khoản"
+      email_changed:
+        subject: "Email đã thay đổi"
+      password_change:
+        subject: "Mật khẩu đã thay đổi"
+    omniauth_callbacks:
+      failure: "Không thể xác thực từ %{kind} bởi vì \"%{reason}\"."
+      success: "Xác nhận thành công từ tài khoản %{kind}."
+    passwords:
+      no_token: "Bạn không thể truy cập trang này nếu không từ email khôi phục mật khẩu. Nếu từ email khôi phục mật khẩu, vui lòng dùng đầy đủ đường đẫn cung cấp."
+      send_instructions: "Bạn sẽ nhận email hướng dẫn thay đổi mật khẩu trong vài phút."
+      send_paranoid_instructions: "Nếu email tồn tại, bạn sẽ nhận email hướng dẫn khôi phục mật khẩu trong vài phút."
+      updated: "Đổi mật khẩu thành công. Bạn đã đăng nhập."
+      updated_not_active: "Mật khẩu thay đổi thành công."
+    registrations:
+      destroyed: "Tạm biệt! Tài khoản của bạn đã được huỷ bỏ thành công. Chúng tôi hi vọng sớm gặp lại bạn."
+      signed_up: "Chào mừng! Bạn đã đăng nhập thành công."
+      signed_up_but_inactive: "Bạn đã đăng nhập thành công. Nhưng bạn cần phải kích hoạt tài khoản để hoàn tất đăng nhập."
+      signed_up_but_locked: "Bạn đã đăng nhập thành công. Nhưng không thể tiếp tục vì tài khoản đã bị khoá."
+      signed_up_but_unconfirmed: "Một thông báo cùng với xác nhận đã được gửi vào email của bạn. Vui lòng làm theo hướng dẫn để kích hoạt tài khoản."
+      update_needs_confirmation: "Bạn đã cập nhật tài khoản thành công, nhưng chúng tôi cần xác thực địa chỉ email mới. Vui lòng kiểm tra email và làm theo hướng dẫn để xác thực địa chỉ email mới."
+      updated: "Tài khoản của bạn đã cập nhật thành công."
+      updated_but_not_signed_in: "Tài khoản của bạn đã được cập nhật thành công, nhưng vì mật khẩu đã thay đổi, bạn cần đăng nhập lại."
+    sessions:
+      signed_in: "Đăng nhập thành công."
+      signed_out: "Đăng xuất thành công."
+      already_signed_out: "Đã đăng xuất thành công."
+    unlocks:
+      send_instructions: "Bạn sẽ nhận được email hướng dẫn mở khoá trong vài phút."
+      send_paranoid_instructions: "Nếu tài khoản tồn tại, bạn sẽ nhận được email hướng dẫn mở khoá trong vài phút."
+      unlocked: "Tài khoản của bạn đã được mở khoá. Vui lòng đăng nhập để tiếp tục."
+  errors:
+    messages:
+      already_confirmed: "Đã xác thực, vui lòng thử đăng nhập"
+      confirmation_period_expired: "Cần xác thực với %{period}, xin vui lòng tạo yêu cầu mới"
+      expired: "Đã bị hết hạn, xin vui lòng tạo yêu cầu mới"
+      not_found: "Không tìm thấy"
+      not_locked: "Không bị khoá"
+      not_saved:
+        one: "1 lỗi phát hiện bởi %{resource} không thể lưu:"
+        other: "%{count} lỗi phát hiện bởi %{resource} không thể lưu:"

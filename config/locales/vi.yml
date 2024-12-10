@@ -1,0 +1,6 @@
+vi:
+  devise:
+    failure:
+      user:
+        invalid: "Thông tin người dùng không hợp lệ"
+      invalid: "Thông tin đăng nhập không chính xác"
