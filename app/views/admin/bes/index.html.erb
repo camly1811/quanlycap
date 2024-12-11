@@ -12,7 +12,6 @@
       <th scope="col">Kinh độ</th>
       <th scope="col">Vĩ độ</th>
       <th scope="col">Ghi chú</th>
-      <th scope="col">Tùy chọn</th>
     </tr>
   </thead>
   <tbody>
@@ -24,11 +23,6 @@
         <td style="text-align: center;"><%= be.longitude %></td>
         <td style="text-align: center;"><%= be.latitude %></td>
         <td><%= be.address %></td>
-        <td>
-          <%= link_to edit_admin_be_path(be), class: 'btn btn-primary', title: 'Chỉnh sửa' do %>
-            <i class="fa fa-pencil-alt"></i>
-          <% end %>
-        </td>
       </tr>
     <% end %>
   </tbody>
