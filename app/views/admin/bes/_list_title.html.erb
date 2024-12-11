@@ -1,0 +1,34 @@
+<div class="nav-lists">
+  <li class = "titile_li"><%= link_to 'Bể Cáp', admin_bes_path %></li>
+  <li class="titile_li">
+    <%= link_to 'Thống kê bể cáp theo Hố ga', filter_by_loaibe_admin_bes_path(loaibe: 'Hố ga') %>
+  </li>
+  <li class="titile_li">
+    <%= link_to 'Thống kê bể cáp theo Bể cáp 1 đan', filter_by_loaibe_admin_bes_path(loaibe: 'Bể cáp 1 đan') %>
+  </li>
+  <li class="titile_li">
+    <%= link_to 'Thống kê bể cáp theo Bể cáp 2 đan', filter_by_loaibe_admin_bes_path(loaibe: 'Bể cáp 2 đan') %>
+  </li>
+  <li class="titile_li">
+    <%= link_to 'Biểu đồ của bể cáp', "" %>
+  </li>
+</div>
+<style>
+  /* Reset list style và khoảng cách */
+  .nav-lists {
+    list-style: none;
+    padding: 0;
+    display: flex; /* Dùng Flexbox để tạo các mục nằm ngang */
+    justify-content: center; /* Canh giữa các mục nằm ngang */
+    gap: 10px; /* Khoảng cách giữa các mục */
+  }
+
+  .nav-lists li {
+    border: 1px solid #333; /* Tạo khung với đường viền */
+    padding: 10px 15px; /* Thêm padding cho khoảng cách bên trong khung */
+    margin-right: 5px; /* Khoảng cách giữa các khung */
+    border-radius: 4px; /* Tùy chọn - bo tròn các góc khung */
+    display: inline-block;
+    margin-top: 10px;
+  }
+</style>

@@ -5,6 +5,11 @@ Rails.application.routes.draw do
       patch 'update_password', to: 'users#update_password'
     end
     get 'user/current', to: 'users#show_current'
+    resources :bes, only: [:index] do
+      collection do
+        get 'filter_by_loaibe'
+      end
+    end
   end
   devise_for :users, controllers: { registrations: 'registrations' }
   resources :roles do

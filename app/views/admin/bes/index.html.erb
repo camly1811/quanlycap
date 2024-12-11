@@ -1,0 +1,76 @@
+<%= render 'list_title' %>
+
+<div class="summary">
+  <p>Tổng số bể cáp: <strong><%= @bes.count %></strong></p>
+</div>
+<table class="styled-table">
+  <thead>
+    <tr>
+      <th scope="col">STT</th>
+      <th scope="col">Loại bể</th>
+      <th scope="col">Đơn vị quản lý</th>
+      <th scope="col">Kinh độ</th>
+      <th scope="col">Vĩ độ</th>
+      <th scope="col">Ghi chú</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @bes.each_with_index do |be, index| %>
+      <tr>
+        <td style="text-align: center;"><%= index + 1 %></td>    
+        <td><%= be.loaibe %></td>    
+        <td><%= be.coquan %></td>
+        <td style="text-align: center;"><%= be.longitude %></td>
+        <td style="text-align: center;"><%= be.latitude %></td>
+        <td><%= be.address %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<style>
+  /* General Reset for Table */
+  .styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+  }
+
+  /* Header Styling */
+  .styled-table thead th {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 10px;
+    text-align: center;
+    font-size: 16px;
+    border: 1px solid #ddd;
+  }
+
+  /* Row and Cell Styling */
+  .styled-table tbody tr {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .styled-table tbody td {
+    padding: 10px 15px;
+    text-align: left;
+  }
+
+  /* Hover Effect */
+  .styled-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  /* Responsive Design */
+  @media screen and (max-width: 768px) {
+    .styled-table {
+      font-size: 14px;
+    }
+
+    .styled-table th,
+    .styled-table td {
+      padding: 8px;
+    }
+  }
+</style>
