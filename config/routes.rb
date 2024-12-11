@@ -5,7 +5,7 @@ Rails.application.routes.draw do
       patch 'update_password', to: 'users#update_password'
     end
     get 'user/current', to: 'users#show_current'
-    resources :bes, only: [:index] do
+    resources :bes, only: [:index, :edit, :update] do
       collection do
         get 'filter_by_loaibe'
       end

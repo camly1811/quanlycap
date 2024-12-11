@@ -1,0 +1,48 @@
+<h1>Chỉnh sửa thông tin bể cáp</h1>
+
+<%= form_with model: [:admin, @be], local: true do |form| %>
+  <% if @be.errors.any? %>
+    <div class="error-messages">
+      <h2><%= pluralize(@be.errors.count, "lỗi") %> đã xảy ra:</h2>
+      <ul>
+        <% @be.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= form.label :tenbe, 'Tên bể cáp' %>
+    <%= form.text_field :tenbe %>
+  </div>
+
+  <div class="field">
+    <%= form.label :loaibe, 'Loại bể' %>
+    <%= form.text_field :loaibe %>
+  </div>
+
+  <div class="field">
+    <%= form.label :coquan, 'Đơn vị quản lý' %>
+    <%= form.text_field :coquan %>
+  </div>
+
+  <div class="field">
+    <%= form.label :latitude, 'Vĩ độ' %>
+    <%= form.number_field :latitude, step: 0.000001 %>
+  </div>
+
+  <div class="field">
+    <%= form.label :longitude, 'Kinh độ' %>
+    <%= form.number_field :longitude, step: 0.000001 %>
+  </div>
+
+  <div class="field">
+    <%= form.label :address, 'Địa chỉ' %>
+    <%= form.text_field :address %>
+  </div>
+
+  <div class="actions">
+    <%= form.submit "Cập nhật thông tin" %>
+  </div>
+<% end %>
