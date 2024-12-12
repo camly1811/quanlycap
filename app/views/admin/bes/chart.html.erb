@@ -1,0 +1,55 @@
+<%= render 'list_title' %>
+<div>
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-top: 40px">
+    <div style="flex: 1; margin: 20px; min-width: 300px;">
+      <%= column_chart @bes.group(:loaibe).count, xtitle: "Tên loại bể", ytitle: "Số lượng bể", width: "100%", height: "500px" %>
+    </div>
+    <div style="flex: 1; margin-top: 40px; min-width: 300px;">
+      <%= pie_chart @percent_data, 
+          legend: true, 
+          colors: ['#FF6384', '#36A2EB', '#FFCE56'], suffix: "%" %>
+      
+      <div style="margin-top: 20px;">
+        <ul style="list-style-type: none; margin-left: 33%;">
+          <% @percent_data.each do |loaibe, percent| %>
+            <li><strong><%= loaibe %>:</strong> <%= percent %>%</li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div style="text-align: center; ">
+    <h4 style="color: #4A90E2; font-weight: bold;">Biểu đồ bể cáp dựa theo loại bể</h4>
+  </div>
+</div>
+<div>
+  <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; margin-top: 40px">
+    <div style="flex: 1; margin: 20px; min-width: 300px;">
+      <%= column_chart @bes.group(:coquan).count, width: "100%", height: "500px" %>
+    </div>
+    <div style="flex: 1; min-width: 300px;">
+      <div>
+        <%= pie_chart @donvql_tong, 
+          legend: true, 
+          colors: ['#FF6384', '#36A2EB', '#FFCE56'], suffix: "%" %>
+      </div>
+      <div style="margin-top: 20px;">
+        <ul style="list-style-type: none; margin-left: 33%;">
+          <% @donvql_tong.each do |coquan, percent| %>
+            <li><strong><%= coquan %>:</strong> <%= percent %>%</li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div style="text-align: center; ">
+    <h4 style="color: #4A90E2; font-weight: bold;">Biểu đồ bể cáp dựa theo đơn vị quản lý</h4>
+  </div>
+</div>
+<style>
+  @media (max-width: 600px) {
+    div {
+      flex: 1 1 100%; /* Chiếm 100% chiều rộng khi màn hình nhỏ */
+    }
+  }
+</style>

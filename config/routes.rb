@@ -8,6 +8,7 @@ Rails.application.routes.draw do
     resources :bes, only: [:index] do
       collection do
         get 'filter_by_loaibe'
+        get 'chart'
       end
     end
   end
