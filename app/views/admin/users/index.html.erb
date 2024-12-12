@@ -31,7 +31,7 @@
         <div class="col col-5 title_col" data-label="Address"><%= link_to user.address %></div>
         <div class="col col-6 title_col" data-label="Role"><%= link_to user.roles.map { |role| { 1 => 'Quản trị viên', 2 => 'Người dùng', 3 => 'Người điều hành' }[role.id] }.join(', ') %></div>
         <div class="col col-1 act_submit" data-label="Actions">
-          <%= button_to admin_user_path(user), method: :delete, data: { confirm: 'Bạn có chắc muốn xóa người dùng này?' }, class: "btn btn-outline-danger" do %>
+          <%= button_to admin_user_path(user), method: :delete, data: { confirm: 'Bạn có chắc muốn xóa người dùng này?' }, class: "delete-button" do %>
             <i class="fas fa-trash-alt"></i> <!-- Icon xóa từ FontAwesome -->
           <% end %>
         </div>
@@ -257,6 +257,22 @@ h2 small {
 /* Center text in table header */
 .table-header .col {
   text-align: center;
+}
+.delete-button {
+  background: none; /* Loại bỏ nền */
+  border: none; /* Loại bỏ viền */
+  padding: 0; /* Loại bỏ padding */
+  cursor: pointer; /* Hiển thị con trỏ khi di chuột */
+  color: #FF0000; /* Màu sắc cho icon (có thể thay đổi) */
+  margin-left: 15px;
+}
+
+.delete-button i {
+  font-size: 20px; /* Kích thước icon */
+}
+
+.delete-button:hover {
+  color: #FF6347; /* Màu khi hover (có thể thay đổi) */
 }
 
 @media all and (max-width: 767px) {
