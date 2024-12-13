@@ -11,6 +11,7 @@ Rails.application.routes.draw do
         get 'chart'
       end
     end
+    resources :tuyencaps, only: [:index]
   end
   devise_for :users, controllers: { registrations: 'registrations' }
   resources :roles do

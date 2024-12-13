@@ -1,0 +1,118 @@
+<%= render 'list_tuyencap' %>
+<div class="summary">
+  <p>Tổng số bể cáp: <strong><%= @total_routes %></strong></p>
+</div>
+<table class="styled-table">
+  <thead>
+    <tr>
+      <th>Tên Tuyến</th>
+      <th>Phân Loại</th>
+      <th>Đơn Vị Quản Lý</th>
+      <th>Điểm bắt đầu</th>
+      <th>Điểm kết thúc</th>
+      <th>Loại bể</th>
+      <th>Tọa độ điểm</th>
+      <th>Loại bể</th>
+      <th>Tọa độ điểm</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @grouped_tuyencap_bes.each do |ten_tuyen, records| %>
+      <% records.each_with_index do |record, index| %>
+        <tr>
+          <% if index == 0 %>
+            <td rowspan="<%= records.size %>"><%= record.tuyencap.ten_tuyen %></td>
+            <td rowspan="<%= records.size %>"><%= record.tuyencap.phanloai %></td>
+            <td rowspan="<%= records.size %>"><%= record.tuyencap.dvquanly %></td>
+            <td rowspan="<%= records.size %>"><%= record.tuyencap.diembatdau %></td>
+            <td rowspan="<%= records.size %>"><%= record.tuyencap.diemketthuc %></td>
+          <% end %>
+          <td><%= record.be_id_dau.loaibe %></td>
+          <td>
+            Latitude: <%= record.be_id_dau.latitude %><br>
+            Longitude: <%= record.be_id_dau.longitude %>
+          </td>
+          <td><%= record.be_id_cuoi.loaibe %></td>
+          <td>
+            Latitude: <%= record.be_id_cuoi.latitude %><br>
+            Longitude: <%= record.be_id_cuoi.longitude %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+<style>
+/* Reset and general styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+/* Style the table */
+.styled-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 14px;
+  text-align: left;
+}
+
+/* Header style */
+.styled-table th {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px;
+  border: 1px solid #ddd;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Body row style */
+.styled-table td {
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  /* vertical-align: top; */
+}
+
+/* Row hover effect */
+.styled-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+/* Optional: Add alternate row coloring for better visibility */
+.styled-table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Responsive Table */
+@media screen and (max-width: 768px) {
+  .styled-table thead {
+    display: none;
+  }
+
+  .styled-table,
+  .styled-table tbody,
+  .styled-table tr,
+  .styled-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .styled-table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px;
+    border: none;
+  }
+
+  .styled-table tr {
+    border-bottom: 2px solid #ddd;
+  }
+}
+</style>
